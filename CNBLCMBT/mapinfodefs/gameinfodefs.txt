@@ -1,0 +1,41 @@
+/*
+
+MAPINFO - Game Information Definitions
+
+*/
+
+GameInfo {
+
+	// Title
+	//titlemusic = "lump"
+	titlepage = "TITLEPIC"
+	titletime = 1
+	creditpage = ""
+	
+	// Finale
+	//finaleflat = "lump"
+	//finalemusic = "lump"
+	//finalpage = "lump",
+	//noloopfinalemusic = true
+	
+	// Quit
+	quitmessages = "$QMSG_1", "$QMSG_2", "$QMSG_3", "$QMSG_4"
+	//quitsound = "kurwa"
+	
+	// Menu
+	//cursorpic = "lump"
+	dimcolor = "00 00 00"
+	dimamount = 0.85
+
+	// Player Classes
+	playerclasses = "ccPlayer"
+	
+	// Gameplay
+	//pausesign = "lump"     // Image for pause screen.
+	nightmarefast = true     // Fast Monsters with Nightmare flag.
+	pickupcolor = "00 FF FF" // Item pickup flash tint.
+	defaultdropstyle = 2     // Item drop distance effect.
+	
+	// Chat Sound
+	//chatsound = "radiofuzz"
+}

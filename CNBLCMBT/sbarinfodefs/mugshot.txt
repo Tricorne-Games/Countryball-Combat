@@ -1,0 +1,30 @@
+/*
+
+SBARINFO - Mugshot Definitions
+
+*/
+
+// Mugshot "Ouch Face" Fix
+mugshot "Ouch", health {
+	OUCH0 1;
+}
+
+// Electric Damage
+mugshot "Pain.Electric", health {
+	OUCH0 1;
+}
+
+// Fire Damage
+mugshot "Pain.Fire", health {
+	OUCH0 1;
+}
+
+// Gas Damage
+mugshot "Pain.Gas", health {
+	OUCH0 1;
+}
+
+// Ice Damage
+mugshot "Pain.Ice", health {
+	OUCH0 1;
+}

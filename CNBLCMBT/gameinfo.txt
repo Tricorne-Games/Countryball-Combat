@@ -1,0 +1,11 @@
+/*
+
+GAMEINFO
+
+*/
+
+IWAD = "freedm.wad"
+
+STARTUPTITLE = "Countryball Combat"
+
+STARTUPCOLORS = "FFFFFF", "FF0000"

@@ -1,0 +1,21 @@
+/*
+
+Effect - Splashes
+
+*/
+
+// Water Splashes
+actor Splash_Water_Large : WaterSplashBase {
+	States {
+		Spawn:
+			TNT2 A 5
+			Stop
+	}
+}
+actor Splash_Water_Small : WaterSplash {
+	States {
+		Spawn:
+			TNT2 A 3
+			Stop
+	}
+}

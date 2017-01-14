@@ -1,0 +1,7 @@
+/*
+
+SBARINFO - Automap
+
+*/
+
+StatusBar Automap {}

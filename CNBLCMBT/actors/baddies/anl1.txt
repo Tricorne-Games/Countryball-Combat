@@ -1,0 +1,56 @@
+/*
+
+Pistol Anschlussling
+
+A small baddy. Fires a pistol.
+
+*/
+
+actor anl1 {
+	Health 20
+	Radius 20
+	Height 56
+	Speed 8
+	PainChance 200
+	Monster
+	+FLOORCLIP
+	SeeSound "grunt/sight"
+	AttackSound "grunt/attack"
+	PainSound "grunt/pain"
+	DeathSound "grunt/death"
+	ActiveSound "grunt/active"
+	Obituary "$OB_ZOMBIE" // "%o was gunned down by a Pistol Anschlussling."
+	DropItem "Clip"
+	
+	States {
+		Spawn:
+			ANL1 AB 10 A_Look
+			Loop
+		See:
+			ANL1 AABBCCDD 4 A_Chase
+			Loop
+		Missile:
+			ANL1 E 10 A_FaceTarget
+			ANL1 F 8 A_PosAttack
+			ANL1 E 8
+			Goto See
+		Pain:
+			ANL1 G 3
+			ANL1 G 3 A_Pain
+			Goto See
+		Death:
+			ANL1 H 5
+			ANL1 I 5 A_Scream
+			ANL1 J 5 A_NoBlocking
+			ANL1 K 5
+			ANL1 L -1
+			Stop
+		XDeath:
+			ANL1 M 5
+			ANL1 N 5 A_XScream
+			ANL1 O 5 A_NoBlocking
+			ANL1 PQRST 5
+			ANL1 U -1
+			Stop
+	}
+}

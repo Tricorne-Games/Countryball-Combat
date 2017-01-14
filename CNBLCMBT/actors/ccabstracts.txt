@@ -1,0 +1,64 @@
+/*
+
+Abstracts
+
+Unseen actors that serve purely as functional components, such as footsteps,
+checks for random shots fired when electrocuted, the Current Weapon system, etc.
+
+*/
+
+
+
+// Electrocution Shot Check
+/*
+This allows the effect of shooting randomly when getting shocked.
+
+This inventory must be checked for in a weapon's routine for it to work on
+that weapon, otherwise it will be ignored. Additionally, all weapons should
+have a line in their Select: state to remove this when sweapping weapons,
+so if there is a stray one left over, it won't randomly shoot a gun that
+does apply the effect.
+*/
+actor ElecShot : Inventory {
+	inventory.MaxAmount 1
+}
+
+
+
+// Cough Check
+/*
+This allows the effect of pitching downward and back up in coughing.
+
+This inventory must be checked for in a weapon's routine for it to work on
+that weapon, otherwise it will be ignored. Additionally, all weapons should
+have a line in their Select: state to remove this when sweapping weapons,
+so if there is a stray one left over, it won't randomly shoot a gun that
+does apply the effect.
+*/
+actor Cough : Inventory {
+	inventory.MaxAmount 1
+}
+
+
+
+// Weapon Weights
+/*
+This gives weapons a weight drag that will affect player movement.
+
+0 = Lightest; 100 = Heaviest
+*/
+actor WeaponWeight : Inventory {
+	inventory.MaxAmount 100
+}
+
+
+
+/*
+Ice Water Protection
+
+This represents the endurance of a player's body heat before
+they start taking damage from ice water.
+*/
+actor IceWaterProtect : Inventory {
+	inventory.MaxAmount 1
+}

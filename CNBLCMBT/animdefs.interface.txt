@@ -1,0 +1,31 @@
+/*
+
+ANIMDEFS - Interface
+
+Animations for interfaces, such as the main menu.
+
+*/
+
+// Main Menu Selector
+texture M_KNIFE0
+	pic M_KNIFE0 tics 1
+	pic M_KNIFE1 tics 1
+	pic M_KNIFE2 tics 1
+	pic M_KNIFE3 tics 1
+	pic M_KNIFE4 tics 1
+	pic M_KNIFE5 tics 1
+	pic M_KNIFE6 tics 1
+	pic M_KNIFE7 tics 1
+	pic M_KNIFE8 tics 1
+	pic M_KNIFE9 tics 1
+	// Oscillate
+	pic M_KNIFE9 tics 1
+	pic M_KNIFE8 tics 1
+	pic M_KNIFE7 tics 1
+	pic M_KNIFE6 tics 1
+	pic M_KNIFE5 tics 1
+	pic M_KNIFE4 tics 1
+	pic M_KNIFE3 tics 1
+	pic M_KNIFE2 tics 1
+	pic M_KNIFE1 tics 1
+	pic M_KNIFE0 tics 1

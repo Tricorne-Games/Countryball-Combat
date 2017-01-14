@@ -1,0 +1,74 @@
+/*
+
+Strafe Tilt
+
+When the player strafes, it tilts the camera.
+
+*/
+
+// Initial
+#library "strafetilt"
+
+#include "zcommon.acs"
+
+#import "glocomps.acs"
+
+
+
+// Scripts
+script "strafetilt" ENTER {
+	while (True) {
+		int strafemod;
+		int strafe;
+		static int strafespeed = 0.0007;
+		
+		// Receive input. Fast movement should cause tilt.
+		if (CheckPlayerOnGround()
+		&& GetPlayerMoveSpeed(PlayerNumber()) > 1.1) {
+				strafemod = GetPlayerInput(-1, INPUT_SIDEMOVE) / 50;
+				strafemod *= -1; // Inverts tilt direction.
+		}
+		else {
+			// Reset view
+			if (strafe < 0) {
+				strafe += strafespeed;
+			}
+			if (strafe > 0) {
+				strafe -= strafespeed;
+			}
+		}
+		// Left tilt (right when inverted).
+		if (strafemod < 0 && strafe >= strafemod) {
+			strafe -= strafespeed;
+		}
+		// Right tilt (left when inverted).
+		if (strafemod > 0 && strafe <= strafemod) {
+			strafe += strafespeed;
+		}
+		// Reset view when no movement keys are pressed or player is moving slow.
+		if ((!(KeyDown(BT_MOVELEFT)
+		|| GetPlayerInput(-1, INPUT_SIDEMOVE) < 0)
+		&& !(KeyDown(BT_MOVERIGHT)
+		|| GetPlayerInput(-1, INPUT_SIDEMOVE) > 0))
+		|| GetPlayerMoveSpeed(0) < 1.1) {
+			if (strafe > 0) {
+				strafe -= strafespeed;
+			}
+			if (strafe < 0) {
+				strafe += strafespeed;
+			}
+		}
+		
+		// Set limits.
+		if (strafe < -4.0) {
+			strafe = -4.0;
+		}
+		if (strafe > 4.0) {
+			strafe = 4.0;
+		}
+		
+		// Apply tilt.
+		ChangeActorRoll(0, strafe, True);
+		Delay(1);
+	}
+}

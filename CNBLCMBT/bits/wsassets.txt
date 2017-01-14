@@ -1,0 +1,849 @@
+/*
+
+Weapon Swap - Assets
+
+In order to do weapon swaps, the weapon spawns need to be
+redefined as usable pickups. These are the assets that make
+the weapon spawns function that way, in tandem with the
+"Weapon Swap" ACS code.
+
+*/
+
+// WeaponPickup Base Class
+/*
+This is the base class for all the pickup spawns each weapon has.
+*/
+actor WeaponPickup : SwitchableDecoration {
+	// When used, alternate between Active and Inactive states. Also, set the player as its target.
+	Activation (THINGSPEC_Switch | THINGSPEC_ThingTargets)
+
+	// Pickup sound.
+	SeeSound "misc/w_pkup"
+
+	+BRIGHT
+	+USESPECIAL // Can be interacted with by using it, just like a door or a switch.
+
+	var int user_wait[8]; // The pickup delay is tracked per player.
+	var int user_pickedup[8]; // Tracks whether it was picked up or not in co-op games.
+	var int user_group; // Weapon group.
+	var int user_index; // Position/index in the group.
+
+	States {
+		Init:
+			"####" "#" -1 ACS_NamedExecuteWithResult("InitWeaponPickup")
+			Stop
+		Active:
+		Inactive:
+			"####" "#" -1 ACS_NamedExecuteWithResult("WeaponPickup", tid)
+			Stop
+	}
+}
+
+actor SetDropped : CustomInventory {
+	States {
+		Pickup:
+			TNT1 A 0 A_ChangeFlag("DROPPED", TRUE)
+			Stop
+	}
+}
+
+
+
+
+
+
+// -------------------------------------------------------------------------------------------
+
+actor Melee1Pickup : WeaponPickup 11001 {
+	/*
+	Identifies this actor class and derived classes as the named pickup.
+	This property needs to match the actor class's name.
+	*/
+	Species "Melee1Pickup"
+
+	/*
+	This is the name printed on the HUD when using pickup.
+	It also displays in the pickup message.
+	*/
+	Tag "Melee 1"
+
+	States {
+		Spawn:
+			MEL1 W 0
+			Goto Init
+	}
+}
+
+actor Melee2Pickup : WeaponPickup 11002
+{
+	Species "Melee2Pickup"
+	Tag "Melee 2"
+
+	States {
+		Spawn:
+			MEL2 W 0
+			Goto Init
+	}
+}
+
+actor Melee3Pickup : WeaponPickup 11003
+{
+	Species "Melee3Pickup"
+	Tag "Melee 3"
+
+	States {
+		Spawn:
+			MEL3 W 0
+			Goto Init
+	}
+}
+
+actor Melee4Pickup : WeaponPickup 11004
+{
+	Species "Melee4Pickup"
+	Tag "Melee 4"
+
+	States {
+		Spawn:
+			MEL4 W 0
+			Goto Init
+	}
+}
+
+actor Melee5Pickup : WeaponPickup 11005
+{
+	Species "Melee5Pickup"
+	Tag "Melee 5"
+
+	States {
+		Spawn:
+			MEL5 W 0
+			Goto Init
+	}
+}
+
+// -------------------------------------------------------------------------------------------
+
+actor AmmoBased1Pickup : WeaponPickup 11006
+{
+	/*
+	This is the amount of ammo the pickup provides when picked up.
+	*/
+	Accuracy 8
+
+	Species "AmmoBased1Pickup"
+	Tag "Ammo-based 1"
+
+	States {
+		Spawn:
+			AMO1 W 0
+			Goto Init
+	}
+}
+
+actor AmmoBased2Pickup : WeaponPickup 11007
+{
+	Accuracy 20
+	Species "AmmoBased2Pickup"
+	Tag "Ammo-based 2"
+
+	States {
+		Spawn:
+			AMO2 W 0
+			Goto Init
+	}
+}
+
+actor AmmoBased3Pickup : WeaponPickup 11008
+{
+	Accuracy 2
+	Species "AmmoBased3Pickup"
+	Tag "Ammo-based 3"
+
+	States {
+		Spawn:
+			AMO3 W 0
+			Goto Init
+	}
+}
+
+actor AmmoBased4Pickup : WeaponPickup 11009
+{
+	Accuracy 40
+	Species "AmmoBased4Pickup"
+	Tag "Ammo-based 4"
+
+	States {
+		Spawn:
+			AMO4 W 0
+			Goto Init
+	}
+}
+
+actor AmmoBased5Pickup : WeaponPickup 11010
+{
+	Accuracy 1
+	Species "AmmoBased5Pickup"
+	Tag "Ammo-based 5"
+
+	States {
+		Spawn:
+			AMO5 W 0
+			Goto Init
+	}
+}
+
+// -------------------------------------------------------------------------------------------
+
+actor Throw1Pickup : WeaponPickup 11011
+{
+	Accuracy 1
+	Species "Throw1Pickup"
+	Tag "Throwable 1"
+
+	States {
+		Spawn:
+			THR1 W 0
+			Goto Init
+	}
+}
+
+actor Throw1PickupBig : Throw1Pickup 16001
+{
+	Accuracy 2
+	Tag "Box of Throwable 1"
+
+	/*
+	If this is non-zero, the pickup is always removed when picked up, even in co-op games.
+	*/
+	Stamina 1
+
+	States {
+		Spawn:
+			THR1 Z 0
+			Goto Init
+	}
+}
+
+actor Throw2Pickup : WeaponPickup 11012
+{
+	Accuracy 1
+	Species "Throw2Pickup"
+	Tag "Throwable 2"
+
+	States {
+		Spawn:
+			THR2 W 0
+			Goto Init
+	}
+}
+
+actor Throw2PickupBig : Throw2Pickup 16002
+{
+	Accuracy 3
+	Tag "Stack of Throwable 2"
+	Stamina 1
+
+	States {
+		Spawn:
+			THR2 Z 0
+			Goto Init
+	}
+}
+
+actor Throw3Pickup : WeaponPickup 11013
+{
+	Accuracy 1
+	Species "Throw3Pickup"
+	Tag "Throwable 3"
+
+	States
+	{
+	Spawn:
+		THR3 W 0
+		Goto Init
+	}
+}
+
+actor Throw3PickupBig : Throw3Pickup 16003
+{
+	Accuracy 5
+	Tag "Pile of Throwable 3"
+	Stamina 1
+
+	States
+	{
+	Spawn:
+		THR3 Z 0
+		Goto Init
+	}
+}
+
+actor Throw4Pickup : WeaponPickup 11014
+{
+	Accuracy 1
+	Species "Throw4Pickup"
+	Tag "Throwable 4"
+
+	States
+	{
+	Spawn:
+		THR4 W 0
+		Goto Init
+	}
+}
+
+actor Throw4PickupBig : Throw4Pickup 16004
+{
+	Accuracy 7
+	Tag "Bundle of Throwable 4"
+	Stamina 1
+
+	States
+	{
+	Spawn:
+		THR4 Z 0
+		Goto Init
+	}
+}
+
+actor Throw5Pickup : WeaponPickup 11015
+{
+	Accuracy 1
+	Species "Throw5Pickup"
+	Tag "Throwable 5"
+
+	States
+	{
+	Spawn:
+		THR5 W 0
+		Goto Init
+	}
+}
+
+actor Throw5PickupBig : Throw5Pickup 16005
+{
+	Accuracy 10
+	Tag "Group of Throwable 5"
+	Stamina 1
+
+	States
+	{
+	Spawn:
+		THR5 Z 0
+		Goto Init
+	}
+}
+
+// ------------------------------------------------------------------------------------------------
+//
+//   Weapons
+//
+// ------------------------------------------------------------------------------------------------
+
+/*
+This is the base for all weapons in use.
+*/
+actor WeaponBase : Weapon
+{
+	States
+	{
+	Select:
+	Deselect:
+	Ready:
+	Fire:
+		TNT1 A -1
+		Stop
+	}
+}
+
+actor MeleeBase : WeaponBase
+{
+	Weapon.SlotNumber 1
+}
+
+actor AmmoBasedBase : WeaponBase
+{
+	Weapon.AmmoUse 1
+	Weapon.SlotNumber 2
+}
+
+actor ThrowBase : WeaponBase
+{
+	Weapon.AmmoUse 1
+	Weapon.SlotNumber 3
+}
+
+// --------------------------------------------------------------------------------------
+
+actor Melee1 : MeleeBase
+{
+	States
+	{
+	Spawn:
+		MEL1 W -1
+		Stop
+
+	Select:
+		MEL1 H 1 A_Raise
+		Loop
+
+	Deselect:
+		MEL1 H 1 A_Lower
+		Loop
+
+	Ready:
+		MEL1 H 1 A_WeaponReady(WRF_NOFIRE)
+		Loop
+	}
+}
+
+actor Melee2 : MeleeBase
+{
+	States
+	{
+	Spawn:
+		MEL2 W -1
+		Stop
+
+	Select:
+		MEL2 H 1 A_Raise
+		Loop
+
+	Deselect:
+		MEL2 H 1 A_Lower
+		Loop
+
+	Ready:
+		MEL2 H 1 A_WeaponReady(WRF_NOFIRE)
+		Loop
+	}
+}
+
+actor Melee3 : MeleeBase
+{
+	States
+	{
+	Spawn:
+		MEL3 W -1
+		Stop
+
+	Select:
+		MEL3 H 1 A_Raise
+		Loop
+
+	Deselect:
+		MEL3 H 1 A_Lower
+		Loop
+
+	Ready:
+		MEL3 H 1 A_WeaponReady(WRF_NOFIRE)
+		Loop
+	}
+}
+
+actor Melee4 : MeleeBase
+{
+	States
+	{
+	Spawn:
+		MEL4 W -1
+		Stop
+
+	Select:
+		MEL4 H 1 A_Raise
+		Loop
+
+	Deselect:
+		MEL4 H 1 A_Lower
+		Loop
+
+	Ready:
+		MEL4 H 1 A_WeaponReady(WRF_NOFIRE)
+		Loop
+	}
+}
+
+actor Melee5 : MeleeBase
+{
+	States
+	{
+	Spawn:
+		MEL5 W -1
+		Stop
+
+	Select:
+		MEL5 H 1 A_Raise
+		Loop
+
+	Deselect:
+		MEL5 H 1 A_Lower
+		Loop
+
+	Ready:
+		MEL5 H 1 A_WeaponReady(WRF_NOFIRE)
+		Loop
+	}
+}
+
+// --------------------------------------------------------------------------------------
+
+actor AmmoBased1 : AmmoBasedBase
+{
+	Weapon.AmmoType "AmmoBased1Ammo"
+
+	States
+	{
+	Spawn:
+		AMO1 W -1
+		Stop
+
+	Select:
+		AMO1 H 1 A_Raise
+		Loop
+
+	Deselect:
+		AMO1 H 1 A_Lower
+		Loop
+
+	Ready:
+		AMO1 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		AMO1 H 8
+		AMO1 H 12 A_FireMissile
+		Goto Ready
+	}
+}
+
+actor AmmoBased1Ammo : Ammo
+{
+	Inventory.Icon "BROKA0"
+	Inventory.MaxAmount 50
+}
+
+actor AmmoBased2 : AmmoBasedBase
+{
+	Weapon.AmmoType "AmmoBased2Ammo"
+
+	States
+	{
+	Spawn:
+		AMO2 W -1
+		Stop
+
+	Select:
+		AMO2 H 1 A_Raise
+		Loop
+
+	Deselect:
+		AMO2 H 1 A_Lower
+		Loop
+
+	Ready:
+		AMO2 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		AMO2 H 8
+		AMO2 H 12 A_FireMissile
+		Goto Ready
+	}
+}
+
+actor AmmoBased2Ammo : Ammo
+{
+	Inventory.Icon "BROKA0"
+	Inventory.MaxAmount 200
+}
+
+actor AmmoBased3 : AmmoBasedBase
+{
+	Weapon.AmmoType "AmmoBased3Ammo"
+
+	States
+	{
+	Spawn:
+		AMO3 W -1
+		Stop
+
+	Select:
+		AMO3 H 1 A_Raise
+		Loop
+
+	Deselect:
+		AMO3 H 1 A_Lower
+		Loop
+
+	Ready:
+		AMO3 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		AMO3 H 8
+		AMO3 H 12 A_FireMissile
+		Goto Ready
+	}
+}
+
+actor AmmoBased3Ammo : Ammo
+{
+	Inventory.Icon "BROKA0"
+	Inventory.MaxAmount 30
+}
+
+actor AmmoBased4 : AmmoBasedBase
+{
+	Weapon.AmmoType "AmmoBased4Ammo"
+
+	States
+	{
+	Spawn:
+		AMO4 W -1
+		Stop
+
+	Select:
+		AMO4 H 1 A_Raise
+		Loop
+
+	Deselect:
+		AMO4 H 1 A_Lower
+		Loop
+
+	Ready:
+		AMO4 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		AMO4 H 8
+		AMO4 H 12 A_FireMissile
+		Goto Ready
+	}
+}
+
+actor AmmoBased4Ammo : Ammo
+{
+	Inventory.Icon "BROKA0"
+	Inventory.MaxAmount 300
+}
+
+actor AmmoBased5 : AmmoBasedBase
+{
+	Weapon.AmmoType "AmmoBased5Ammo"
+
+	States
+	{
+	Spawn:
+		AMO5 W -1
+		Stop
+
+	Select:
+		AMO5 H 1 A_Raise
+		Loop
+
+	Deselect:
+		AMO5 H 1 A_Lower
+		Loop
+
+	Ready:
+		AMO5 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		AMO5 H 8
+		AMO5 H 12 A_FireMissile
+		Goto Ready
+	}
+}
+
+actor AmmoBased5Ammo : Ammo
+{
+	Inventory.Icon "BROKA0"
+	Inventory.MaxAmount 5
+}
+
+// --------------------------------------------------------------------------------------
+
+actor Throw1 : ThrowBase
+{
+	Weapon.AmmoType "Throw1Ammo"
+
+	States
+	{
+	Spawn:
+		THR1 W -1
+		Stop
+
+	Select:
+		THR1 H 1 A_Raise
+		Loop
+
+	Deselect:
+		THR1 H 1 A_Lower
+		Loop
+
+	Ready:
+		THR1 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		THR1 H 8
+		THR1 H 12 A_FirePlasma
+		Goto Ready
+	}
+}
+
+actor Throw1Ammo : Ammo
+{
+	Inventory.Icon "CELPA0"
+	Inventory.MaxAmount 5
+}
+
+// ---------------------------------------------------------------------------------
+
+actor Throw2 : ThrowBase
+{
+	Weapon.AmmoType "Throw2Ammo"
+
+	States
+	{
+	Spawn:
+		THR2 W -1
+		Stop
+
+	Select:
+		THR2 H 1 A_Raise
+		Loop
+
+	Deselect:
+		THR2 H 1 A_Lower
+		Loop
+
+	Ready:
+		THR2 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		THR2 H 8
+		THR2 H 12 A_FirePlasma
+		Goto Ready
+	}
+}
+
+actor Throw2Ammo : Ammo
+{
+	Inventory.Icon "CELPA0"
+	Inventory.MaxAmount 8
+}
+
+// ---------------------------------------------------------------------------------
+
+actor Throw3 : ThrowBase
+{
+	Weapon.AmmoType "Throw3Ammo"
+
+	States
+	{
+	Spawn:
+		THR3 W -1
+		Stop
+
+	Select:
+		THR3 H 1 A_Raise
+		Loop
+
+	Deselect:
+		THR3 H 1 A_Lower
+		Loop
+
+	Ready:
+		THR3 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		THR3 H 8
+		THR3 H 12 A_FirePlasma
+		Goto Ready
+	}
+}
+
+actor Throw3Ammo : Ammo
+{
+	Inventory.Icon "CELPA0"
+	Inventory.MaxAmount 12
+}
+
+// ---------------------------------------------------------------------------------
+
+actor Throw4 : ThrowBase
+{
+	Weapon.AmmoType "Throw4Ammo"
+
+	States
+	{
+	Spawn:
+		THR4 W -1
+		Stop
+
+	Select:
+		THR4 H 1 A_Raise
+		Loop
+
+	Deselect:
+		THR4 H 1 A_Lower
+		Loop
+
+	Ready:
+		THR4 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		THR4 H 8
+		THR4 H 12 A_FirePlasma
+		Goto Ready
+	}
+}
+
+actor Throw4Ammo : Ammo
+{
+	Inventory.Icon "CELPA0"
+	Inventory.MaxAmount 9
+}
+
+// ---------------------------------------------------------------------------------
+
+actor Throw5 : ThrowBase
+{
+	Weapon.AmmoType "Throw5Ammo"
+
+	States
+	{
+	Spawn:
+		THR5 W -1
+		Stop
+
+	Select:
+		THR5 H 1 A_Raise
+		Loop
+
+	Deselect:
+		THR5 H 1 A_Lower
+		Loop
+
+	Ready:
+		THR5 H 1 A_WeaponReady
+		Loop
+
+	Fire:
+		THR5 H 8
+		THR5 H 12 A_FirePlasma
+		Goto Ready
+	}
+}
+
+actor Throw5Ammo : Ammo
+{
+	Inventory.Icon "CELPA0"
+	Inventory.MaxAmount 3
+}

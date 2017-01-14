@@ -1,0 +1,272 @@
+/*
+
+Weapon Swap - System
+
+The mechanisms that allow weapon swapping.
+
+Note: If you intend to include your own weapons, you must edit
+the weapons[] array below to include your weapon, as well as
+having it fit the "assets" code that makes this script work.
+
+Once that is finished, you then compile this script to update
+it, so the game knows your weapon is available and performs
+the same way.
+
+*/
+
+// Initials
+#library "weaponswap"
+
+#include "zcommon.acs"
+
+#define WS_GroupCount 3 // Number of weapon groups (or "types").
+#define WS_WeaponsPerGroup 999 // Number of weapons per group.
+#define WS_WeaponPickupClass 0 // Class name of the weapon pickup.
+#define WS_WeaponClass 1 // Class name of the weapon
+#define WS_WeaponAmmoClass 2 // Class name of the ammo used by the weapon.
+#define WS_PickupDelay 35 * 3 // Number of tics to wait for the player to pick the weapon up after the first use.
+
+#define WS_GRP_Melee 0 // Weapons which don't use ammo.
+#define WS_GRP_Ballistic 1 // Weapons which do use ammo.
+#define WS_GRP_Throwable 2 // Weapons whose pickup acts as the weapon and ammo at the same time.
+
+str weapons[3][WS_WeaponsPerGroup][3] = {
+	// Group 0 (Melee)
+	{
+		{"Melee1Pickup", "Melee1", "",},
+		{"Melee2Pickup", "Melee2", "",},
+		{"Melee3Pickup", "Melee3", "",},
+		{"Melee4Pickup", "Melee4", "",},
+		{"Melee5Pickup", "Melee5", "",}
+	},
+	// Group 1 (Ballistic)
+	{
+		{"ccPistolPickup", "ccPistol", "bullet_small"},
+		{"ccShotgunPickup", "ccShotgun", "shell_buckshot"},
+		{"ccAutoShotgunPickup", "ccAutoShotgun", "shell_buckshot"},
+		{"ccAssaultRiflePickup", "ccAssaultRifle", "bullet_large"},
+		{"ccHeavyMachineGunPickup", "ccHeavyMachineGun", "bullet_large"},
+		{"ccMissileLauncherPickup", "ccMissileLauncher", "missile_"},
+		{"ccSniperRiflePickup", "ccSniperRifle", "bullet_large"}
+	},
+	// Group 2 (Throwable)
+	{
+		{"Throw1Pickup", "Throw1", "Throw1Ammo",},
+		{"Throw2Pickup", "Throw2", "Throw2Ammo",},
+		{"Throw3Pickup", "Throw3", "Throw3Ammo",},
+		{"Throw4Pickup", "Throw4", "Throw4Ammo",},
+		{"Throw5Pickup", "Throw5", "Throw5Ammo",}
+	}
+};
+
+str foundWeapon[3] = {"", "None", ""};
+
+// Return the weapon's name.
+function str GetWeaponName (int tid, int group) {
+	str groupColor;
+
+	switch (group) {
+		default:
+		case WS_GRP_Melee:
+			groupColor = "\c[LightBlue]";
+			break;
+		case WS_GRP_Ballistic:
+			groupColor = "\c[Green]";
+			break;
+		case WS_GRP_Throwable:
+			groupColor = "\c[Red]";
+			break;
+	}
+
+	return StrParam(s:groupColor, s:GetActorProperty(tid, APROP_NameTag));
+}
+
+
+
+// Scripts
+script "InitWeaponPickup" (void) {
+	int i, j;
+
+	// Assign a TID (a unique one), but only if none has been assigned beforehand.
+	if (ActivatorTID() == 0) {
+		Thing_ChangeTID(0, UniqueTID());
+	}
+
+	// Determine the group and index.
+	for (i = 0; i < WS_GroupCount; i++)	{
+		for (j = 0; j < WS_WeaponsPerGroup; j++) {
+			if (!StrIcmp(GetActorProperty(0, APROP_Species), weapons[i][j][WS_WeaponPickupClass])) {
+				SetUserVariable(0, "user_group", i);
+				SetUserVariable(0, "user_index", j);
+				terminate;
+			}
+		}
+	}
+}
+
+script "WeaponPickup" (int tid) {
+	/*
+	Switch script activation to the player so that the following
+	code work in the context of the player, and not the pickup.
+	*/
+	SetActivatorToTarget(0);
+
+	int pnum = PlayerNumber();
+
+	// Map-spawned pickups can only be picked up once per player in co-op games.
+	if (GameType() != GAME_SINGLE_PLAYER
+	&& !CheckFlag(tid, "DROPPED")
+	&& GetUserArray(tid, "user_pickedup", pnum)) {
+		Print(l:"\c[White]WPU_ALREADY");
+		terminate;
+	}
+
+	int i;
+	int group = GetUserVariable(tid, "user_group");
+	int index = GetUserVariable(tid, "user_index");
+
+	/*
+	Go through the weapons in the group, and see if the player has a weapon
+	which belongs to the same group as the weapon being picked up.
+	*/
+	for (i = 0; i < WS_WeaponsPerGroup; i++) {
+		if (CheckInventory(weapons[group][i][WS_WeaponClass])) {
+			foundWeapon[WS_WeaponPickupClass] = weapons[group][i][WS_WeaponPickupClass];
+			foundWeapon[WS_WeaponClass] = weapons[group][i][WS_WeaponClass];
+			foundWeapon[WS_WeaponAmmoClass] = weapons[group][i][WS_WeaponAmmoClass];
+			break;
+		}
+	}
+
+	// Compare the weapon class name of the found weapon and the weapon being picked up.
+	int compare = StrIcmp(foundWeapon[WS_WeaponClass], weapons[group][index][WS_WeaponClass]);
+
+	// First Use: Print the weapon's name and wait for the second use.
+	// Exception: Skip the first use if the weapon being picked up is the same as the one in the inventory.
+	if (compare && !GetUserArray(tid, "user_wait", pnum)) {
+		Print(s:GetWeaponName(tid, group));
+		SetUserArray(tid, "user_wait", pnum, True);
+		for (i = 0; i < WS_PickupDelay; i++) {
+			Delay(1);
+		}
+		SetUserArray(tid, "user_wait", pnum, False);
+	}
+
+	// Second Use: Try picking the weapon up.
+	else {
+		int ammo;
+
+		if (group != WS_GRP_Melee) {
+			ammo = CheckInventory(foundWeapon[WS_WeaponAmmoClass]);
+		}
+		
+		/*
+		If the found weapon is the same as the one being picked up,
+		one of the following happens:
+		
+		- If the weapon is melee, tell the player they already have
+		the weapon and abort.
+		
+		- If the weapon isn't melee, tell the player they have full
+		ammo for this weapon if they actually do. If they don't have
+		full ammo but the pickup doesn't provide ammo, then the pickup is
+		useless, so tell them they don't need the weapon.
+		*/
+		if (!compare) {
+			if (group != WS_GRP_Melee) {
+				if (ammo >= GetAmmoCapacity(foundWeapon[WS_WeaponAmmoClass])) {
+					Print(l:"\c[White]WPU_AMMOFULL.");
+					terminate;
+				}
+				else if (GetActorProperty(tid, APROP_Accuracy) <= 0) {
+					Print(l:"\c[White]WPU_DONTNEED");
+					terminate;
+				}
+			}
+			else {
+				Print(l:"\c[White]WPU_ALREADY");
+				terminate;
+			}
+		}
+
+		/*
+		Mark the pickup as being picked up by this player.
+		Only relevant if the game is co-op and the pickup is map-spawned.
+		*/
+		if (GameType() != GAME_SINGLE_PLAYER
+		&& !CheckFlag(tid, "DROPPED")) {
+			SetUserArray(tid, "user_pickedup", pnum, True);
+		}
+
+		/*
+		It's okay to pick this weapon up, so play its pickup sound,
+		give it to the player and print the pickup message.
+		*/
+		PlaySound(0, GetActorProperty(tid, APROP_SeeSound), CHAN_ITEM);
+		GiveInventory(weapons[group][index][WS_WeaponClass], 1);
+		Print(s:"\c[White]", s:GetWeaponName(tid, group));
+
+		// Give the player ammunition.
+		/*
+		TO DO: If the weapon uses a different type of ammo, discharge all of the previous ammo.
+		*/
+		if (group != WS_GRP_Melee) {
+			GiveInventory(weapons[group][index][WS_WeaponAmmoClass], GetActorProperty(tid, APROP_Accuracy));
+		}
+
+		/*
+		If a weapon of this group was found and it doesn't match the one
+		being picked up, take it away and drop its pickup to the ground.
+		*/
+		if (StrIcmp(foundWeapon[WS_WeaponClass], "None") && compare) {
+			// If the found weapon is currently being held by the player, switch to the one that was just picked up.
+			if (CheckWeapon(foundWeapon[WS_WeaponClass])) {
+				SetWeapon(weapons[group][index][WS_WeaponClass]);
+			}
+
+			// Take the found weapon away.
+			TakeInventory(foundWeapon[WS_WeaponClass], 1);
+
+			/*
+			The found weapon's pickup shouldn't be dropped if it belongs
+			to either the ammo-based or throwable groups while the player
+			has no ammo for the weapon in their inventory.
+			*/
+			if (!(group != WS_GRP_Melee && ammo <= 0)) {
+				int droptid = UniqueTID();
+				int angle = GetActorAngle(0);
+				SpawnForced(foundWeapon[WS_WeaponPickupClass], GetActorX(0) + cos(angle) * 32, GetActorY(0) + sin(angle) * 32, GetActorZ(0) + 24.0, droptid);
+				GiveActorInventory(droptid, "SetDropped", 1);
+
+				/*
+				When dropping an ammo-based weapon pickup, set the amount of
+				ammo the pickup gives to zero, since the player is only
+				dropping the weapon, not the weapon and its ammo.
+				*/
+				if (group == WS_GRP_Ballistic) {
+					SetActorProperty(droptid, APROP_Accuracy, 0);
+				}
+				/*
+				When dropping a throwable weapon, "transfer" the ammo the
+				player has of the weapon to its pickup.
+				When the player picks it up again, they regain that ammo.
+				*/
+				else if (group == WS_GRP_Throwable) {
+					TakeInventory(foundWeapon[WS_WeaponAmmoClass], ammo);
+					SetActorProperty(droptid, APROP_Accuracy, ammo);
+				}
+			}
+		}
+
+		/*
+		Remove the pickup from the "world" if the current game is
+		single-player, the pickup was previously dropped or it was
+		requested to be removed.
+		*/
+		if (GameType() == GAME_SINGLE_PLAYER
+		|| CheckFlag(tid, "DROPPED")
+		|| GetActorProperty(tid, APROP_Stamina) != 0) {
+			Thing_Remove(tid);
+		}
+	}
+}

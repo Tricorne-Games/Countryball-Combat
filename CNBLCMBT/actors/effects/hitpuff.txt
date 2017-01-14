@@ -1,0 +1,24 @@
+/*
+
+Effect - Hit Puff
+
+*/
+
+actor HitPuff {
+	+NOBLOCKMAP
+	+ALLOWPARTICLES
+	+RANDOMIZE
+	+NOBLOOD
+	RenderStyle Translucent
+	Alpha 0.5
+	VSpeed 1
+	
+	States {
+		Spawn:
+			PUFF A 2 Bright
+			PUFF B 2
+		Melee:
+			PUFF CD 2
+			Stop
+	}
+}

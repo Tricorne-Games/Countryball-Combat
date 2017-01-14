@@ -1,0 +1,47 @@
+/*
+
+Unarmed
+
+Fists to attack without a weapon.
+
+*/
+
+actor ccUnarmed : ccMelee replaces Fist {
+	// Text Info
+	Tag "$WT_UNARMED"
+	//Obituary ""
+	
+	// Slot Number
+	Weapon.SlotNumber 1
+	
+	// Traits
+	+WEAPON.NOALERT
+	+WEAPON.MELEEWEAPON
+	Weapon.KickBack 100
+	
+	// Sounds
+	//Weapon.UpSound "sound"
+	//Weapon.ReadySound "sound"
+	//AttackSound "weapons/dspistol"
+	
+	States {
+		Select:
+			Goto StartSelect
+		PrepWeapon:
+			TNT1 A 0 A_GiveInventory("WeaponWeight", 0)
+			Goto PostSelect
+		Ready:
+			TNT1 A 1 A_WeaponReady
+			TNT1 A 0 A_JumpIfInventory("Cough", 1, "CoughDown") // Cough when gassed.
+			Loop
+		Deselect:
+			TNT1 A 0
+			Goto PostDeselect
+		Fire:
+			TNT1 A 1 A_ChangeVelocity(2.0, 0.0, 0.0, CVF_RELATIVE)
+			TNT1 A 4 A_Punch
+			TNT1 A 1 A_ChangeVelocity(-2.0, 0.0, 0.0, CVF_RELATIVE)
+			TNT1 A 4
+			Goto Ready
+	}
+}

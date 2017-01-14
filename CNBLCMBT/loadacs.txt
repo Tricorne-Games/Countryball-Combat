@@ -1,0 +1,23 @@
+/*
+
+LOADACS
+
+*/
+
+// Global Components
+glocomps
+
+// Effects
+underwatersway // Underwater Sway
+aimbreathe // Aim/Breathe
+airsupply // Air Supply
+slowmove // Slow Move
+strafetilt // Strafe Tilting
+
+// Sector Types
+electricfloor
+gaseousarea
+icewater
+
+// Weapons
+//weaponswap

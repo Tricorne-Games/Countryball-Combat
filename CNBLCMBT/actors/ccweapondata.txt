@@ -1,0 +1,247 @@
+/*
+
+CC Weapon Class
+
+Weapon data and functionality.
+
+*/
+
+
+
+// ccWeapon Class
+/*
+The base class all weapons use as seen in the HUD.
+*/
+actor ccWeapon : Weapon {	
+	// Traits
+	+Weapon.AMMO_OPTIONAL
+	+Weapon.NOAUTOAIM
+	+Weapon.NOAUTOFIRE
+	//Weapon.KickBack 1
+	
+	// Bob Style
+	Weapon.BobStyle Alpha
+	Weapon.BobRangeX 0.5
+	Weapon.BobRangeY 0.5
+	Weapon.BobSpeed 1.5
+	
+	// Ammunition
+	Weapon.AmmoGive 0
+	Weapon.AmmoType "Current_Chamber"
+	
+	/*
+	These are the default states that every weapon has for basic function.
+	Some weapons may need to overwrite these states, or do more complex
+	operations and animations for proper functionality.
+	*/
+	States {	
+		// Initial Select State
+		StartSelect:
+			// Make initial step to run the rest of the setup in 0 frames.
+			TNT1 A 1
+			// Clear out side effects, in case the previous weapon did not already discharge them.
+			TNT1 A 0 A_TakeInventory("ElecShot", 1)
+			TNT1 A 0 A_TakeInventory("Cough", 1)
+			// Clear out weapon weights.
+			TNT1 A 0 A_TakeInventory("WeaponWeight", 100)
+			TNT1 A 0 A_Jump(256, "PrepWeapon")
+			
+		// Post-Select
+		PostSelect:
+			"####" "#" 1 A_Raise
+			Loop
+			
+		// Check Ready before going to AmmoReady.
+		CheckReady:
+			"####" "#" 0 A_JumpIfInventory("ElecShot", 1, "ElecFire") // Shoot when electrocuted.
+			"####" "#" 0 A_JumpIfInventory("Cough", 1, "CoughDown") // Cough when gassed.
+			"####" "#" 0 A_ZoomFactor(1.0) // Always reset zoom.
+			"####" "#" 0 A_Jump(256, "AmmoReady")
+			
+
+		// Reserve Ammo Pushing Mechanisms
+		InsertReserve:
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_Jump(256, "Ready")
+		LimitChamber:
+			TNT1 A 0 A_TakeInventory("Current_Chamber", 1)
+			TNT1 A 0 A_Jump(256, "Ready")
+		LimitReserve:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_Jump(256, "Ready")
+			
+		// Unload Ammo
+		CheckCurrentChamber:
+			"####" "#" 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber")
+			Goto CheckCurrentReserve
+		CheckCurrentReserve:
+			"####" "#" 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve")
+			Goto PostDeselect
+			
+		// Post-Deselect
+		PostDeselect:
+			"####" "#" 1 A_Lower
+			Loop
+		
+		// Default Weapon Aim/Zoom (N = Normal)
+		Zoom.ZNX:
+			"####" "#" 0 A_ZoomFactor(1.5)
+			"####" "#" 0 A_Jump(256, "Ready")
+			
+		// Default Toggle Sequences
+		Toggle.WeaponDown:
+			"####" "#" 1 Offset(0,35)
+			"####" "#" 1 Offset(0,38)
+			"####" "#" 1 Offset(0,44)
+			TNT1 A 0 A_Jump(256, "ApplyToggle")
+		Toggle.WeaponUp:
+			"####" "#" 1 Offset(0,44)
+			"####" "#" 1 Offset(0,38)
+			"####" "#" 1 Offset(0,35)
+			TNT1 A 0 A_Jump(256, "Ready")	
+
+		// Weapon Flash
+		Flash:
+			TNT1 A 1 Bright A_Light2
+			TNT1 A 1 Bright A_Light1
+			Goto LightDone
+			
+		// Default Dry Fire
+		DryFire:
+			TNT1 A 0 A_PlaySound("weapons/sshotl")
+			TNT1 A 0 A_Jump(256, "Ready")
+			
+		// Default Reload Sequences
+		Reload.WeaponDown:
+			"####" "#" 1 Offset(0, 35)
+			"####" "#" 1 Offset(0, 38)
+			"####" "#" 1 Offset(0, 44)
+			"####" "#" 1 Offset(0, 52)
+			"####" "#" 1 Offset(0, 62)
+			"####" "#" 1 Offset(0, 72)
+			"####" "#" 1 Offset(0, 82)
+			TNT1 A 0 A_PlaySound("misc/w_pkup")
+			TNT1 A 0 A_Jump(256, "LoopReload")
+		LoopReload:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_Jump(256, "LoopReload.CheckCap")
+			Stop
+		LoopReload.Resume:
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "LoopReload")
+			TNT1 A 0 A_Jump(256, "FinishReload")
+			Stop
+		Reload.WeaponUp:
+			"####" "#" 1 Offset(0, 82)
+			"####" "#" 1 Offset(0, 72)
+			"####" "#" 1 Offset(0, 62)
+			"####" "#" 1 Offset(0, 52)
+			"####" "#" 1 Offset(0, 44)
+			"####" "#" 1 Offset(0, 38)
+			"####" "#" 1 Offset(0, 35)
+			"####" "#" 0 A_Jump(256, "Ready")
+			
+		// Electrocution Firing
+		ElecFire:
+			TNT1 A 0 A_TakeInventory("ElecShot", 1) // Remove the ElecShot.
+			TNT1 A 0 A_Jump(256, "Fire")
+
+		// Cough Effect
+		CoughDown:
+			"####" A 0 A_TakeInventory("Cough", 1) // Remove the Cough.
+			"####" A 1 A_SetPitch(pitch+10)
+			"####" AAAAAAAAAA 1 A_SetPitch(pitch-0.5)
+			"####" AAAAAAAAAAAAAAAAAAAA 1 A_SetPitch(pitch-0.25)
+			"####" A 0 A_Jump(256, "Ready")
+	}
+}
+
+
+
+// Current Weapon Slots
+/*
+To be able to use more than two ammo types, these actors represent the ammo
+count for the currently-armed weapon, by pulling all of the ammo out of
+the gun's own chamber (ammo inside gun) and reserve (ammo remaining) and
+putting them into these.
+*/
+// Chamber - The amount of ammo ready to shoot.
+actor Current_Chamber : Ammo {
+	Inventory.MaxAmount 999
+}
+// Reserve - The amount of ammo remaining usable for the gun.
+actor Current_Reserve : Ammo {
+	Inventory.MaxAmount 999
+}
+
+
+
+
+
+// WEAPON-SWAPPING ACTORS
+
+// WeaponPickup Base Class
+/*
+In order to do weapon swaps, the weapon spawns need to be
+redefined as usable pickups. These are the assets that make
+the weapon spawns function that way, in tandem with the
+"Weapon Swap" ACS code.
+
+In order for this to work, each WeaponPickup instance will
+need a TID. It can be any TID-valid number, with the CC
+standard being at 11000, where:
+
+11000-11299 = Melee
+11300-11699 = Ballistic
+11700-11999 = Throwable
+*/
+actor ccWeaponPickup : SwitchableDecoration {
+	// When used, alternate between Active and Inactive states. Also, set the player as its target.
+	Activation (THINGSPEC_Switch | THINGSPEC_ThingTargets)
+
+	// Pickup sound.
+	SeeSound "misc/w_pkup"
+
+	+BRIGHT
+	+USESPECIAL // Can be interacted with by using it, just like a door or a switch.
+
+	var int user_wait[8]; // The pickup delay is tracked per player.
+	var int user_pickedup[8]; // Tracks whether it was picked up or not in co-op games.
+	var int user_group; // Weapon group.
+	var int user_index; // Position/index in the group.
+
+	States {
+		Init:
+			"####" "#" -1 ACS_NamedExecuteWithResult("InitWeaponPickup")
+			Stop
+		Active:
+		Inactive:
+			"####" "#" -1 ACS_NamedExecuteWithResult("WeaponPickup", tid)
+			Stop
+	}
+}
+
+actor SetDropped : CustomInventory {
+	States {
+		Pickup:
+			TNT1 A 0 A_ChangeFlag("DROPPED", TRUE)
+			Stop
+	}
+}
+
+// Melee Weapons
+actor ccMelee : ccWeapon {
+	Weapon.SlotNumber 1
+}
+
+// Ballistic Weapons
+actor ccBallistic : ccWeapon {
+	Weapon.AmmoUse 1
+	Weapon.SlotNumber 2
+}
+
+// Throwable Weapons
+actor ccThrowable : ccWeapon {
+	Weapon.AmmoUse 1
+	Weapon.SlotNumber 3
+}

@@ -1,0 +1,42 @@
+/*
+
+Air Supply
+
+*/
+
+// Initial
+#library "airsupply"
+
+#include "zcommon.acs"
+
+
+
+// Scripts
+script "DisplayAir" ENTER {
+	while (True) {
+		ACS_NamedExecuteWithResult("BonusAir");
+		if (GetActorProperty(0, APROP_WATERLEVEL) > 1) {					
+			// Display
+			SetFont("CONFONT");
+			HudMessageBold(l:"HL_AIR"; HUDMSG_PLAIN, 1, CR_WHITE, 0.2, 0.075, 0.1);
+			SetFont("HUDFONT_DOOM");
+			HudMessageBold(i:GetAirSupply(PlayerNumber())/35; HUDMSG_PLAIN, 2, CR_WHITE, 0.2, 0.1, 0.1);
+		}
+		Delay(1);
+	}
+}
+
+script "BonusAir" (void) {
+	int health;
+	int air;
+	health = GetActorProperty(0, APROP_HEALTH);
+	air = GetAirSupply(PlayerNumber());
+
+	if (health > 100 && air <= 700) {
+		air = 700 * (health - 100) / 100 + 700;
+		SetAirSupply(PlayerNumber(), air);
+	}
+	else if (health <= 100 && air > 700) {
+		SetAirSupply(PlayerNumber(), 700);
+	}
+}

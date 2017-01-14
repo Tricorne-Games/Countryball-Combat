@@ -1,0 +1,34 @@
+/*
+
+TERRAIN
+
+*/
+
+// Water
+splash sp_water {
+	baseclass sp_water_large
+	//chunkclass <chunk class>
+	//chunkxvelshift <x velocity of chunks>
+	//chunkyvelshift <y velocity of chunks>
+	//chunkzvelshift <z velocity of chunks>
+	//chunkbasezvel <z velocity of base>
+	//sound <sound (defined in SNDINFO)>
+	//noalert
+	
+	smallclass sp_water_small
+	//smallclip <clipping of small chunks?>
+	//smallsound <sound (as defined in SNDINFO)>
+}
+terrain tr_water {
+	splash sp_water
+	footclip 3
+	liquid
+
+	//friction <float value>
+
+	//damagetype <type>
+	//damageamount <value>
+	//damagetimemask <value>
+	//allowprotection <boolean>
+}
+floor F_WATER tr_water

@@ -1,0 +1,59 @@
+/*
+
+MAPINFO - Skill Definitions
+
+*/
+
+clearskills
+
+// Cannot into Skill
+skill cintos {
+	Name = "$SL_1"
+	mustconfirm = "$SLWMSG_1"
+	textcolor = lightblue
+	spawnfilter=1
+	Aggressiveness = 0.0
+	SlowMonsters 
+}
+
+// Of Reasonable
+skill oreason {
+	Name = "$SL_2"
+	textcolor = green
+	spawnfilter=2
+	Aggressiveness = 0.25
+}
+
+// Gib Challenge!
+skill gibchal {
+	DefaultSkill
+	Name = "$SL_3"
+	textcolor = yellow
+	FastMonsters
+	spawnfilter=3
+	Aggressiveness = 0.50
+}
+
+// O KURWA!
+skill okurwa {
+	Name = "$SL_4"
+	mustconfirm = "$SLWMSG_4"
+	textcolor = orange
+	spawnfilter=4
+	FastMonsters
+	DisableCheats
+	Aggressiveness = 1.0
+}
+
+// ANSCHLUSS ZEIT!
+skill azeit {
+	Name = "$SL_5"
+	mustconfirm = "$SLWMSG_5"
+	textcolor = darkred
+	spawnfilter=5
+	FastMonsters
+	DisableCheats
+	damagefactor = 255
+	monsterhealth = 0.001
+	Aggressiveness = 1.0
+}

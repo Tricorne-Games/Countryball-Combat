@@ -1,0 +1,26 @@
+/*
+
+Effect - Gun Smoke
+
+*/
+
+actor GunSmoke {
+	+NOBLOCKMAP
+	+NOGRAVITY
+	+ALLOWPARTICLES
+	+RANDOMIZE
+	RenderStyle Translucent
+	Alpha 0.5
+	VSpeed 1
+	Mass 5
+
+	States {
+		Spawn:
+			TNT1 A 4 
+			PUFF C 4
+			// Intentional fall-through
+		Melee:
+			PUFF CD 4
+			Stop
+	}
+}

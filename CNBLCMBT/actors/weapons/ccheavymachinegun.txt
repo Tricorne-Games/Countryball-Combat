@@ -1,0 +1,260 @@
+/*
+
+Weapon - Heavy Machine Gun
+
+A heavy rapid-fire weapon.
+
+This weapon can be box-fed 100 rounds at a time with reloads needed,
+or belt-fed through the entire ammo reserve without needing to reload.
+
+*/
+
+actor ccHeavyMachineGun : ccBallistic replaces Chaingun {
+	// Text Info
+	Tag "$WT_HEAVYMACHINEGUN"
+	//Obituary ""
+	
+	// Sounds
+	//Weapon.UpSound "sound"
+	//Weapon.ReadySound "sound"
+	//AttackSound "weapons/dspistol"
+
+	// States
+	States {			
+		// Weapon Selection
+		/*
+		This is the set of startup actions when selecting the weapon.
+		*/
+		Select:
+			Goto StartSelect
+		PrepWeapon:
+			// Apply weapon's weight.
+			TNT1 A 0 A_GiveInventory("WeaponWeight", 40)
+			// Swapping from another weapon to this weapon.
+			TNT1 A 0 A_JumpIfInventory("ccHeavyMachineGun_BoxFed_m", 1, "PrepMode.BoxFed")
+			// Starting a map with this weapon.
+			TNT1 A 0 A_JumpIfInventory("ccHeavyMachineGun_BoxFed", 1, "CheckWeaponChamber")
+			// If the player never had the gun yet, give this weapon's default mode.
+			ASRF A 0 A_GiveInventory("ccHeavyMachineGun_BoxFed", 1)
+			Goto CheckWeaponChamber
+		// Mode Preparation
+		/*
+		This turns the weapon's mode in memory into the active weapon mode on the HUD.
+		*/
+		PrepMode.BoxFed:
+			TNT1 A 0 A_TakeInventory("ccHeavyMachineGun_BoxFed_m", 1)
+			TNT1 A 0 A_GiveInventory("ccHeavyMachineGun_BoxFed", 1)
+			Goto CheckWeaponChamber
+		// Ammo Loading
+		/*
+		This brings all the ammo from both the weapon itself and the type,
+		into the "current weapon" and "current reserve" slots to read how
+		much ammo is available for the gun.
+		*/
+		CheckWeaponChamber:
+			TNT1 A 0 A_JumpIfInventory("ccHeavyMachineGun_Chamber", 1, "LoadChamber")
+			Goto CheckWeaponReserve
+		LoadChamber:
+			TNT1 A 0 A_TakeInventory("ccHeavyMachineGun_Chamber", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("ccHeavyMachineGun_Chamber", 1, "LoadChamber")
+			Goto CheckWeaponChamber
+		CheckWeaponReserve:
+			ASRF A 0 A_JumpIfInventory("bullet_large", 1, "LoadReserve")
+			Goto PostSelect
+		LoadReserve:
+			TNT1 A 0 A_TakeInventory("bullet_large", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("bullet_large", 1, "LoadReserve")
+			Goto CheckWeaponReserve
+		// Active Weapon
+		/*
+		The weapon is now active. Run the routines necessary.
+		*/
+		Ready:
+			Goto AmmoReady
+		AmmoReady:
+			ASRF A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+			ASRF A 0 A_JumpIfInventory("ElecShot", 1, "ElecFire") // Shoot when electrocuted.
+			ASRF A 0 A_JumpIfInventory("Cough", 1, "CoughDown") // Cough when gassed.
+			ASRF A 0 A_ZoomFactor(1.0) // Always reset zoom.
+			ASRF A 0 A_JumpIfInventory("Current_Chamber", 101, "LimitChamber")
+			ASRF A 0 A_JumpIfInventory("Current_Reserve", 401, "LimitReserve")
+			ASRF A 0 A_JumpIfInventory("bullet_large", 1, "PushReserve")
+			Loop
+		// Push Reserve Ammo
+		/*
+		When collecting ammo for this active weapon, make sure all of its
+		related ammo in reserve gets pushed to the "current reserve" so the
+		player can see how much ammo total of that type.
+		*/
+		PushReserve:
+			TNT1 A 0 A_TakeInventory("bullet_large", 1)
+			Goto InsertReserve
+		// Deactivate Weapon
+		/*
+		When the user puts down the weapon for another, run the routines that
+		pack away all the ammo appropriately, set the weapon mode to memory,
+		and finally end use of the weapon. This works like a reverse of
+		bringing the weapon up.
+		*/
+		Deselect:
+			TNT1 A 0 A_JumpIfInventory("ccHeavyMachineGun_BoxFed", 1, "UndoMode.BoxFed")
+			Stop
+		// Mode Memory
+		/*
+		Remember the mode the gun had before putting away, and keep the tag
+		name out of the HUD.
+		*/
+		UndoMode.BoxFed:
+			TNT1 A 0 A_TakeInventory("ccHeavyMachineGun_BoxFed", 1)
+			TNT1 A 0 A_GiveInventory("ccHeavyMachineGun_BoxFed_m", 1)
+			Goto CheckCurrentChamber
+		// Unload Ammo
+		/*
+		Put the ammo out of the "current weapon" into the weapon's own chamber,
+		and the reserve ammo back to its storage.
+		*/
+		UnloadChamber:
+			TNT1 A 0 A_TakeInventory("Current_Chamber", 1)
+			TNT1 A 0 A_GiveInventory("ccHeavyMachineGun_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber")
+			Goto CheckCurrentChamber
+		UnloadReserve:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("bullet_large", 1)
+			ASRF A 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve")
+			Goto PostDeselect
+			
+		// Weapon Aim/Zoom
+		Zoom:
+			Goto Zoom.ZNX
+			
+		// Toggle Firing Modes
+		AltFire:
+			Stop
+		Toggle:
+			Stop
+			
+		// Firing Mode Actions
+		Fire:
+			TNT1 A 0 A_JumpIfNoAmmo("DryFire")
+			TNT1 A 0 A_Jump(256, "MuzzleFlash1", "MuzzleFlash2", "MuzzleFlash3")
+		Fire.Recoil:
+			ASRF A 0 A_PlaySound("weapons/pistol")
+			ASRF A 0 A_FireCustomMissile("bullet_large_p", FRandom(-0.5, 0.5), true, 0, 0, false, FRandom(-0.5, 0.5))
+			ASRF A 0 A_SpawnItemEx("gunsmoke", 20, 0, 15, 1, 0, 0.5, 0)
+			ASRF A 0 Offset(0,38)
+			ASRF A 0 Offset(0,35)
+			ASRF A 1 A_SpawnItemEx("largebrass", 20, 3, 15, 0, FRandom(2.0, 5.0), FRandom(1.0, 2.0), 0)
+			ASRF A 1 A_SetPitch(pitch-1)
+			ASRF A 1 A_SetPitch(pitch+0.5)
+			ASRF A 1
+			ASRF A 0 Offset(0,35)
+			ASRF A 0 Offset(0,36)
+			TNT1 A 0 A_Refire("Fire")
+			Goto Ready
+		// Muzzle Flashes
+		/*
+		Some weapons, particularly automatic ones, can look better when firing
+		with an animation that randomizes the muzzle flash appearance.
+		*/
+		// Muzzle Flash
+		MuzzleFlash1:
+			ASRF B 1 A_GunFlash
+			Goto Fire.Recoil
+		MuzzleFlash2:
+			ASRF C 1 A_GunFlash
+			Goto Fire.Recoil
+		MuzzleFlash3:
+			ASRF D 1 A_GunFlash
+			Goto Fire.Recoil
+			
+		// Weapon Reload
+		Reload:
+			ASRF A 0 A_JumpIfInventory("Current_Chamber", 100, "Ready")
+			ASRF A 0 A_JumpIfInventory("Current_Reserve", 1, "StartReload")
+			Goto Ready
+		StartReload:
+			Goto Reload.WeaponDown
+		LoopReload:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 100, "FinishReload")
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "LoopReload")
+			Goto FinishReload
+		FinishReload:
+			TNT1 A 11
+			ASRF A 0
+			Goto Reload.WeaponUp
+	}
+}
+
+
+
+// Weapon Modes
+/*
+These are abstract actors native to the weapon, to allow multiple
+firing modes.
+*/
+actor ccHeavyMachineGun_BoxFed : Inventory {
+	Tag "$WMT_HEAVYMACHINEGUN_BOXFED"
+	Inventory.MaxAmount 1
+	+INVENTORY.INVBAR
+}
+
+
+
+// Weapon Modes - Memory
+/*
+These are here so the system "remembers" what setting the gun had,
+without writing the Tag on the HUD.
+*/
+actor ccHeavyMachineGun_BoxFed_m : Inventory {
+	Inventory.MaxAmount 1
+	+INVENTORY.PERSISTENTPOWER
+}
+
+
+
+// Weapon Chamber
+/*
+This is the ammunition inside the gun, so the game remembers how
+much was in it when pulling it out again.
+*/
+actor ccHeavyMachineGun_Chamber : Ammo {
+	Inventory.MaxAmount 100
+}
+
+
+
+
+
+// Weapon-Swap Spawn
+/*
+This is the spawn object of the weapon.
+*/
+actor ccHeavyMachineGunPickup : ccWeaponPickup 11310 {
+	/*
+	This is the amount of ammo the pickup provides when picked up.
+	*/
+	Accuracy 50
+	
+	/*
+	Identifies this actor class and derived classes as the named pickup.
+	This property needs to match the actor class's name.
+	*/
+	Species "ccHeavyMachineGunPickup"
+
+	/*
+	This is the name printed on the HUD when using pickup.
+	It also displays in the pickup message.
+	*/
+	Tag "$WT_HEAVYMACHINEGUN"
+
+	States {
+		Spawn:
+			TNT2 A 0
+			Goto Init
+	}
+}

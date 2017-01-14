@@ -1,0 +1,57 @@
+/*
+
+Global Components
+
+Globals and other reusable components get placed here.
+
+*/
+
+// Initial
+#library "glocomps"
+
+#include "zcommon.acs"
+
+// Return an absolute value.
+function int abs (int x) {
+    if (x < 0) {
+        return -x;
+	}
+    return x;
+}
+
+// Return the smaller of two values.
+function int min (int a, int b) {
+	if (a < b) {
+		return a;
+	}
+	return b;
+}
+
+// Check if player is on the ground.
+function int CheckPlayerOnGround (void) {
+	int onground;
+	if (GetActorZ(0) == GetActorFloorZ(0)
+	|| GetActorVelZ(0) == 0
+	/*&& !Spawn("Z_FloorCheck", GetActorX(0), GetActorY(0), GetActorZ(0) - (4 << 16), 0, GetActorAngle(0))*/) {
+		onground = 1; // On ground.
+	}
+	else {
+		onground = 0; // In air.
+	}
+	return onground;
+}
+
+// Get player's velocity.
+function int GetPlayerMoveSpeed (int p) {
+	return VectorLength(GetActorVelX(p), GetActorVelY(p));
+}
+
+// Check if a key is up.
+function bool KeyUp (int key) {
+	return !(GetPlayerInput(-1, INPUT_BUTTONS) & key);
+}
+
+// Check if a key is down.
+function bool KeyDown (int key) {
+	return !!(GetPlayerInput(-1, INPUT_BUTTONS) & key);
+}

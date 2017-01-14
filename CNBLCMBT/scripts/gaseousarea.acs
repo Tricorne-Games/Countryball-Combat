@@ -1,0 +1,216 @@
+/*
+
+Gaseous Area
+
+Gaseous areas are hazardous sectors that deliver poison damage to any
+player or enemy on them.
+
+They can be turned on and off, typically with a switch (toggle),
+a timer, or an actor that can be destroyed (permanent).
+
+Some levels have them automatically on, some automatically off.
+for example, they may be off at first, in cases like multiplayer
+levels as traps.
+
+*/
+
+// Initial
+#library "gaseousarea"
+
+#include "zcommon.acs"
+
+#libdefine GAREA_MAXCOUNT 999
+
+#libdefine GAREAPROP_Tag 0
+#libdefine GAREAPROP_State 1
+#libdefine GAREAPROP_GasColor 2
+#libdefine GAREAPROP_Delayed 3
+#libdefine GAREAPROP_Damage 4
+#libdefine GAREAPROP_Fade 5
+#libdefine GAREAPROP_Fading 6
+
+#libdefine GASCOLOR_Blue 0
+#libdefine GASCOLOR_Brick 1
+#libdefine GASCOLOR_Brown 2
+#libdefine GASCOLOR_Cream 3
+#libdefine GASCOLOR_Cyan 4
+#libdefine GASCOLOR_Green 5
+#libdefine GASCOLOR_Magenta 6
+#libdefine GASCOLOR_Orange 7
+#libdefine GASCOLOR_Purple 8
+#libdefine GASCOLOR_Red 9
+#libdefine GASCOLOR_White 10
+#libdefine GASCOLOR_Yellow 11
+
+int garea[GAREA_MAXCOUNT][7];
+
+/*
+Note: Currently, this code can only accept the pre-defined colors.
+Unless there is a work-around, there is no direct way to pass very
+specific RGB values.
+*/
+int gcolors[12][3] = {
+	{0, 0, 200}, // Blue
+	{200, 48, 48}, // Brick
+	{151, 84, 29}, // Brown
+	{255, 165, 85}, // Cream
+	{0, 200, 200}, // Cyan
+	{0, 200, 0}, // Green
+	{200, 0, 200}, // Magenta
+	{200, 72, 0}, // Orange
+	{160, 32, 200}, // Purple
+	{200, 0, 0}, // Red
+	{224, 224, 224}, // White
+	{255, 200, 0} // Yellow
+};
+
+// Return the value of the specified sector property.
+function int GetGAreaProp (int index, int prop) {
+	return garea[index-1][prop];
+}
+
+// Set the value of the specified sector property.
+function void SetGAreaProp (int index, int prop, int value) {
+	garea[index-1][prop] = value;
+}
+
+// Adjust the fade of the gas.
+function bool AdjustGAreaFade (int index, int tag, int gascolor, int cfade) {
+	if (!GetGAreaProp(index, GAREAPROP_Fading)) {
+		SetGAreaProp(index, GAREAPROP_Fade, cfade);
+		return True;
+	}
+	int fade = (cfade * 100 / 255) * 0.01;
+	Sector_SetFade(tag,
+		FixedMul(gcolors[gascolor][0], fade),
+		FixedMul(gcolors[gascolor][1], fade),
+		FixedMul(gcolors[gascolor][2], fade));
+	return False;
+}
+
+// Initialize the area properties.
+function void InitGArea (int index, int tag, int gascolor, int state, int damage) {
+	// Set the properties.
+	SetGAreaProp(index, GAREAPROP_Tag, tag);
+	SetGAreaProp(index, GAREAPROP_State, state);
+	SetGAreaProp(index, GAREAPROP_GasColor, gascolor);
+	SetGAreaProp(index, GAREAPROP_Damage, damage);
+
+	// Change the appearance of the sector depending on the state.
+	ACS_NamedExecuteWithResult("ChangeGArea", index, True);
+}
+
+// Switch the area's settings.
+function void switchGArea (int index) {
+	// switch the state to on if it is off, and to off if it is on.
+	SetGAreaProp(index, GAREAPROP_State, GetGAreaProp(index, GAREAPROP_State) ^ ON);
+
+	// Change the appearance of the sector depending on the state.
+	ACS_NamedExecuteWithResult("ChangeGArea", index, False);
+}
+
+
+
+// Scripts
+script "ChangeGArea" (int index, int init, int gasfadestep) {
+	int tag = GetGAreaProp(index, GAREAPROP_Tag);
+	int state = GetGAreaProp(index, GAREAPROP_State);
+
+	int gascolor = GetGAreaProp(index, GAREAPROP_GasColor);
+
+	// When the level is first loaded; the fade is set instantly.
+	if (init) {
+		if (state) {
+			// The state is on, set the fade.
+			SetGAreaProp(index, GAREAPROP_Fade, 255);
+			Sector_SetFade(tag, gcolors[gascolor][0], gcolors[gascolor][1], gcolors[gascolor][2]);
+		}
+		else {
+			// The state is off, clear the fade.
+			SetGAreaProp(index, GAREAPROP_Fade, 0);
+			Sector_SetFade(tag, 0, 0, 0);
+		}
+	}
+
+	// During the level (i.e via activating switches and the like); the fade is set gradually.
+	else {
+		int i;
+
+		if (GetGAreaProp(index, GAREAPROP_Fading)) {
+			// An instance of the script is already running, so mark it to be stopped.
+			SetGAreaProp(index, GAREAPROP_Fading, False);
+		}
+		Delay(2);
+		// Fading starts...
+		SetGAreaProp(index, GAREAPROP_Fading, True);
+		if (state) {
+			// The state is on, so fade in.
+			for (i = GetGAreaProp(index, GAREAPROP_Fade) + gasfadestep; i < 256; i += gasfadestep) {
+				// Adjust the fade and check if the fade process had been marked to be stopped. if it had, terminate.
+				if (AdjustGAreaFade(index, tag, gascolor, i)) {
+					terminate;
+				}
+				Delay(1);
+			}
+			// Make sure the gas has fully faded in.
+			Sector_SetFade(tag, gcolors[gascolor][0], gcolors[gascolor][1], gcolors[gascolor][2]);
+			SetGAreaProp(index, GAREAPROP_Fade, 255);
+		}
+		else {
+			// The state is off, so fade out.
+			for (i = GetGAreaProp(index, GAREAPROP_Fade) - gasfadestep; i >= 0; i -= gasfadestep) {
+				// Adjust the fade and check if the fade process had been marked to be stopped. if it had, terminate.
+				if (AdjustGAreaFade(index, tag, gascolor, i)) {
+					terminate;
+				}
+				Delay(1);
+			}
+			// Make sure the gas has fully faded out (cleared).
+			Sector_SetFade(tag, 0, 0, 0);
+			SetGAreaProp(index, GAREAPROP_Fade, 0);
+		}
+		// We're done fading.
+		SetGAreaProp(index, GAREAPROP_Fading, False);
+	}
+}
+
+script "DoGAreaDamage" (void) {
+	int i;
+	while (True) {
+		for (i = 1; GetGAreaProp(i, GAREAPROP_Tag) != 0; i++) {
+			// Do damage if the sector's state is on.
+			if (GetGAreaProp(i, GAREAPROP_State)) {
+				SectorDamage(GetGAreaProp(i, GAREAPROP_Tag),
+					GetGAreaProp(i, GAREAPROP_Damage),
+					"Gas",
+					"", // Gas Mask
+					DAMAGE_PLAYERS | DAMAGE_NONPLAYERS | DAMAGE_IN_AIR);
+			}
+		}
+		Delay(35);
+	}
+}
+
+// Toggle Script
+/*
+Attach this to a switch or something to activate.
+index - The sector's index.
+fdelay - The tic delay before the state switches back. Use 0 for no delay.
+*/
+script "ToggleGArea" (int index, int fdelay) {
+	if (GetGAreaProp(index, GAREAPROP_Delayed)) {
+		// An instance of the script for this sector is already running, so terminate.
+		terminate;
+	}
+
+	if (fdelay > 0) {
+		// Set this instance of the script as "delayed".
+		SetGAreaProp(index, GAREAPROP_Delayed, True);
+		switchGArea(index);
+		Delay(fdelay);
+
+		// The delay is over, so set this to false.
+		SetGAreaProp(index, GAREAPROP_Delayed, False);
+	}
+	switchGArea(index);
+}

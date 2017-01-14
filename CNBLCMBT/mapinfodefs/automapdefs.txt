@@ -1,0 +1,6 @@
+/*
+
+MAPINFO - Automap Definitions
+
+*/
+

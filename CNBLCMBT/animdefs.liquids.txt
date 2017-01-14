@@ -1,0 +1,10 @@
+/*
+
+ANIMDEFS - Liquid Textures
+
+Animations for liquid-based assets.
+
+*/
+
+// Rippling Water
+WARP2 texture F_WATER 0.25

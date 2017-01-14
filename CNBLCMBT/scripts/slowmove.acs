@@ -1,0 +1,110 @@
+/*
+
+Slow Move
+
+Events that affect an actor's movement to be slower.
+
+*/
+
+// Initial
+#library "slowmove"
+
+#include "zcommon.acs"
+
+#import "glocomps.acs"
+
+
+
+// Scripts
+
+// Damage Slow Move (Actor)
+/*
+This slows down an actor's movement, based on the damage they took.
+This would be typically used on enemies.
+*/
+script "dmgslowmove" (void) {
+	int init_health = GetActorProperty(0, APROP_Health); // Actor's initial health.
+	int init_speed = GetActorProperty(0, APROP_Speed); // Actor's initial speed.
+	int current_health; // Actor's current health, during loop.
+	int rate; // "Percentage" difference to be applied to speed reduction.
+	int clampmin = 0.25; // Minimum Clamp
+	int clampmax = 1.0; // Maximum Clamp
+
+	while (True) {
+		// Find the rate between current health and initial health.
+		current_health = GetActorProperty(0, APROP_Health);
+		rate = (current_health * 100 / init_health) * 0.01;
+		
+		if (GetActorProperty(0, APROP_Waterlevel) >= 1) {
+			rate -= 0.5;
+		}
+
+		// Clamp the rate.
+		if (rate < clampmin) {
+			rate = clampmin;
+		}
+		else if (rate > clampmax) {
+			rate = clampmax;
+		}
+
+		// Apply rate.
+		SetActorProperty(0, APROP_Speed, FixedMul(init_speed, rate));
+		Delay(1);
+	}
+}
+
+// Slow Move (Player)
+/*
+A modified version of the above "Damage Slow Move" code, tailored to the
+player to both execute per player, and accommodate other movement factors.
+*/
+script "slowmove_player" ENTER {
+	if (GameSkill() >= SKILL_EASY) {
+		int init_health = GetActorProperty(0, APROP_Health); // Actor's initial health.
+		int init_speed = GetActorProperty(0, APROP_Speed); // Actor's initial speed.
+		int current_health; // Actor's current health, during loop.
+		int rate; // "Percentage" difference to be applied to speed reduction.
+		int clampmin = 0.25; // Minimum Clamp
+		int clampmax = 1.0; // Maximum Clamp
+		int weaponweight; // Weight of any weapon during loop.
+
+		while (True) {
+			// Find the rate between current health and initial health.
+			current_health = GetActorProperty(0, APROP_Health);
+			rate = (current_health * 100 / init_health) * 0.01;
+			
+			// Find the rate of the weapon drag and combine it to rate.
+			weaponweight = CheckInventory("WeaponWeight");
+			int weapondrag = FixedDiv(weaponweight, 100);
+			rate -= weapondrag;
+			
+			// Check how slow the player will move when wading.
+			if (GetActorProperty(0, APROP_Waterlevel) >= 1
+			&& CheckPlayerOnGround()) {
+				rate -= 0.7;
+			}
+
+			// Clamp the rate.
+			if (rate < clampmin) {
+				rate = clampmin;
+			}
+			else if (rate > clampmax) {
+				rate = clampmax;
+			}
+
+			// Apply rate.
+			SetActorProperty(0, APROP_Speed, FixedMul(init_speed, rate));
+			Delay(1);
+		}
+	}
+}
+
+// Set Weapon Speed
+/*
+Sets a player's speed when wielding a specific weapon. This is principally used
+to make the effect where a heavier weapon will slow the player considerably.
+*/
+script "SetWeaponSpeed" (int value) {
+   int currentspeed = GetActorProperty(0, APROP_Speed);
+   SetActorProperty(0, APROP_Speed, FixedMul(currentspeed, value));
+}

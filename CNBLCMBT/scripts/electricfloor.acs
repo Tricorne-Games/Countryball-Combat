@@ -1,0 +1,107 @@
+/*
+
+Electric Floor
+
+Electric floors are hazardous sectors that deliver electric damage to any
+player or enemy on them.
+
+They can be turned on and off, typically with a switch (toggle),
+a timer, or an actor that can be destroyed (permanent).
+
+Some levels have them automatically on, some automatically off.
+For example, they may be off at first, in cases like multiplayer
+levels as traps.
+
+*/
+
+// Initial
+#library "electricfloor"
+
+#include "zcommon.acs"
+
+#libdefine EFLOOR_MAXCOUNT 999
+
+#libdefine EFLOORPROP_Tag 0
+#libdefine EFLOORPROP_State 1
+#libdefine EFLOORPROP_Delayed 2
+
+int efloor[EFLOOR_MAXCOUNT][3];
+
+// Return the value of the specified sector property.
+function int GetEFloorProp (int index, int prop) {
+	return efloor[index - 1][prop];
+}
+
+// Set the value of the specified sector property.
+function void SetEFloorProp (int index, int prop, int value) {
+	efloor[index - 1][prop] = value;
+}
+
+// Change the appearance of the specified sector property.
+function void ChangeEFloor (int tag, int state) {
+	int brightness;
+	str flat;
+	if (state) {
+		brightness = 200;
+		flat = "LAVA1";
+	}
+	else {
+		brightness = 128;
+		flat = "FLAT1_1";
+	}
+	Light_ChangeToValue(tag, brightness);
+	ChangeFloor(tag, flat);
+}
+
+// Switch the state of the specified sector property.
+function void SwitchEFloor (int index) {
+	// Switch the state to on if it is off, and to off if it is on.
+	SetEFloorProp(index, EFLOORPROP_State, GetEFloorProp(index, EFLOORPROP_State) ^ ON);
+	// Change the appearance of the sector depending on the state.
+	ChangeEFloor(GetEFloorProp(index, EFLOORPROP_Tag), GetEFloorProp(index, EFLOORPROP_State));
+}
+
+// Initialize the sector.
+function void InitEFloor (int index, int tag, int state) {
+	// Set the properties.
+	SetEFloorProp(index, EFLOORPROP_Tag, tag);
+	SetEFloorProp(index, EFLOORPROP_State, state);
+
+	// Change the appearance of the sector depending on the state.
+	ChangeEFloor(tag, state);
+}
+
+
+
+// Scripts
+script "DoEFloorDamage" (void) {
+    int i;
+    while(True) {
+		for(i = 1; GetEFloorProp(i, EFLOORPROP_Tag) != 0; i++) {
+			// Do damage if the area's state is on.
+			if(GetEFloorProp(i, EFLOORPROP_State))
+			{
+				SectorDamage(GetEFloorProp(i, EFLOORPROP_Tag), 1, "Electric", "", DAMAGE_PLAYERS|DAMAGE_NONPLAYERS);
+			}
+		}
+		Delay(1);
+	}
+}
+
+script "ToggleEFloor" (int index, int fdelay) {
+	// If an instance of this code is already running, terminate.
+	if (GetEFloorProp(index, EFLOORPROP_Delayed)) {
+		terminate;
+	}
+
+	// Set this instance of the script as "delayed".
+	if (fdelay > 0) {
+	
+		SetEFloorProp(index, EFLOORPROP_Delayed, True);
+		SwitchEFloor(index);
+		Delay(fdelay);
+		SetEFloorProp(index, EFLOORPROP_Delayed, False);
+	}
+
+	SwitchEFloor(index);
+}

@@ -1,0 +1,43 @@
+/*
+
+Effect - Buckshot Shell
+
+This is the shell that's ejected after using buckshot shells.
+
+*/
+
+actor buckshotshell {
+	Tag "buckshotshell"
+	Height 2
+	Radius 2
+	Speed 2
+	Mass 5
+	
+	PROJECTILE
+	+DOOMBOUNCE
+	-NOGRAVITY
+	-NOBLOCKMAP
+	+FORCEXYBILLBOARD
+	
+	BounceFactor 0.3
+	WallBounceFactor 0.35
+	BounceCount 2
+	
+	//BounceSound "weapons/shellcasing"
+	// ^ Consider making alternate sounds, for water, grass, etc.
+	
+	States {
+		Spawn:
+			BSHL ABCDEFGH 1
+			Loop
+		Death:
+			TNT1 A 0 A_Jump(256, "Death.Left", "Death.Right")
+			Stop
+		Death.Left:
+			BSHL A 10 A_FadeOut(0.005)
+			Wait
+		Death.Right:
+			BSHL E 10 A_FadeOut(0.005)
+			Wait
+	}
+}

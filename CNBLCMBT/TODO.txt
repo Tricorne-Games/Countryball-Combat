@@ -1,0 +1,7 @@
+THIS LIST WILL BE UPDATED AS NECESSARY
+
+Weapon Swap: Discharge original ammo if swapping for a different type of the same weapon class.
+
+Quicksand-styled sector type.
+
+turn the gun's bullet puffs into projectiles, so smoke always follows the shots.

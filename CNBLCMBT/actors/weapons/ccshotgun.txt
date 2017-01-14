@@ -1,0 +1,586 @@
+/*
+
+Weapon - Pump-Action Shotgun
+
+A shotgun with three firing modes:
+
+1) Buckshot - Standard spread.
+2) Slug - One powerful shot.
+3) Incendiary - Same as buckshot with fire damage.
+
+*/
+
+actor ccShotgun : ccBallistic replaces Shotgun {
+	// Text Info
+	Tag "$WT_SHOTGUN"
+	//Obituary ""
+	
+	// Sounds
+	//Weapon.UpSound "sound"
+	//Weapon.ReadySound "sound"
+	//AttackSound "weapons/dspistol"
+
+	// States
+	States {
+		// Weapon Selection
+		/*
+		This is the set of startup actions when selecting the weapon.
+		*/
+		Select:
+			Goto StartSelect
+		PrepWeapon:
+			// Apply weapon's weight.
+			TNT1 A 0 A_GiveInventory("WeaponWeight", 15)
+			// Swapping from another weapon to this weapon.
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Buckshot_m", 1, "PrepMode.Buckshot")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Slug_m", 1, "PrepMode.Slug")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Incendiary_m", 1, "PrepMode.Incendiary")
+			// Starting a map with this weapon.
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Buckshot", 1, "CheckWeaponMode.Equip")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Slug", 1, "CheckWeaponMode.Equip")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Incendiary", 1, "CheckWeaponMode.Equip")
+			// If the player never had the gun yet, give this weapon's default mode.
+			SHGN A 0 A_GiveInventory("ccShotgun_Buckshot", 1)
+			Goto CheckWeaponMode.Equip
+		// Mode Preparation
+		/*
+		This turns the weapon's mode in memory into the active weapon mode on the HUD.
+		*/
+		PrepMode.Buckshot:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Buckshot_m", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Buckshot", 1)
+			Goto CheckWeaponMode.Equip
+		PrepMode.Slug:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Slug_m", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Slug", 1)
+			Goto CheckWeaponMode.Equip
+		PrepMode.Incendiary:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Incendiary_m", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Incendiary", 1)
+			Goto CheckWeaponMode.Equip
+		// Ammo Loading
+		/*
+		This brings all the ammo from both the weapon itself and the type,
+		into the "current weapon" and "current reserve" slots to read how
+		much ammo is available for the gun.
+		*/
+		CheckWeaponMode.Equip:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Buckshot", 1, "CheckChamber.Buckshot")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Slug", 1, "CheckChamber.Slug")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Incendiary", 1, "CheckChamber.Incendiary")
+			Stop
+		CheckChamber.Buckshot:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Buckshot", 1, "LoadChamber.Buckshot")
+			Goto CheckReserve.Buckshot
+		CheckChamber.Slug:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Slug", 1, "LoadChamber.Slug")
+			Goto CheckReserve.Slug
+		CheckChamber.Incendiary:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Incendiary", 1, "LoadChamber.Incendiary")
+			Goto CheckReserve.Incendiary
+		LoadChamber.Buckshot:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Chamber_Buckshot", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Buckshot", 1, "LoadChamber.Buckshot")
+			Goto CheckChamber.Buckshot
+		LoadChamber.Slug:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Chamber_Slug", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Slug", 1, "LoadChamber.Slug")
+			Goto CheckChamber.Slug
+		LoadChamber.Incendiary:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Chamber_Incendiary", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Incendiary", 1, "LoadChamber.Incendiary")
+			Goto CheckChamber.Incendiary
+		CheckReserve.Buckshot:
+			SHGN A 0 A_JumpIfInventory("shell_buckshot", 1, "LoadReserve.Buckshot")
+			Goto PostSelect
+		CheckReserve.Slug:
+			SHGN A 0 A_JumpIfInventory("shell_slug", 1, "LoadReserve.Slug")
+			Goto PostSelect
+		CheckReserve.Incendiary:
+			SHGN A 0 A_JumpIfInventory("shell_incendiary", 1, "LoadReserve.Incendiary")
+			Goto PostSelect
+		LoadReserve.Buckshot:
+			TNT1 A 0 A_TakeInventory("shell_buckshot", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("shell_buckshot", 1, "LoadReserve.Buckshot")
+			Goto CheckReserve.Buckshot
+		LoadReserve.Slug:
+			TNT1 A 0 A_TakeInventory("shell_slug", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("shell_slug", 1, "LoadReserve.Slug")
+			Goto CheckReserve.Slug
+		LoadReserve.Incendiary:
+			TNT1 A 0 A_TakeInventory("shell_incendiary", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("shell_incendiary", 1, "LoadReserve.Incendiary")
+			Goto CheckReserve.Incendiary
+		// Active Weapon
+		/*
+		The weapon is now active. Run the routines necessary.
+		*/
+		Ready:
+			SHGN A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+			Goto CheckReady
+		AmmoReady:
+			SHGN A 0 A_JumpIfInventory("Current_Chamber", 9, "LimitChamber")
+			SHGN A 0 A_JumpIfInventory("Current_Reserve", 101, "LimitReserve")
+			SHGN A 0 A_JumpIfInventory("ccShotgun_Buckshot", 1, "CheckPush.Buckshot")
+			SHGN A 0 A_JumpIfInventory("ccShotgun_Slug", 1, "CheckPush.Slug")
+			SHGN A 0 A_JumpIfInventory("ccShotgun_Incendiary", 1, "CheckPush.Incendiary")
+			Goto Ready
+		// Push Reserve Ammo
+		/*
+		When collecting ammo for this active weapon, make sure all of its
+		related ammo in reserve gets pushed to the "current reserve" so the
+		player can see how much ammo total of that type.
+		*/
+		CheckPush.Buckshot:
+			TNT1 A 0 A_JumpIfInventory("shell_buckshot", 1, "Push.Buckshot")
+			Goto Ready
+		CheckPush.Slug:
+			TNT1 A 0 A_JumpIfInventory("shell_slug", 1, "Push.Slug")
+			Goto Ready
+		CheckPush.Incendiary:
+			TNT1 A 0 A_JumpIfInventory("shell_incendiary", 1, "Push.Incendiary")
+			Goto Ready
+		Push.Buckshot:
+			TNT1 A 0 A_TakeInventory("shell_buckshot", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("shell_buckshot", 1, "Push.Buckshot")
+			Goto Ready
+		Push.Slug:
+			TNT1 A 0 A_TakeInventory("shell_slug", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("shell_slug", 1, "Push.Slug")
+			Goto Ready
+		Push.Incendiary:
+			TNT1 A 0 A_TakeInventory("shell_incendiary", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("shell_incendiary", 1, "Push.Incendiary")
+			Goto Ready
+		// Deactivate Weapon
+		/*
+		When the user puts down the weapon for another, run the routines that
+		pack away all the ammo appropriately, set the weapon mode to memory,
+		and finally end use of the weapon. This works like a reverse of
+		bringing the weapon up.
+		*/
+		Deselect:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Buckshot", 1, "UndoMode.Buckshot")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Slug", 1, "UndoMode.Slug")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Incendiary", 1, "UndoMode.Incendiary")
+			Stop
+		// Mode Memory
+		/*
+		Remember the mode the gun had before putting away, and keep the tag
+		name out of the HUD.
+		*/
+		UndoMode.Buckshot:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Buckshot", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Buckshot_m", 1)
+			Goto CheckWeaponMode.Unequip
+		UndoMode.Slug:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Slug", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Slug_m", 1)
+			Goto CheckWeaponMode.Unequip
+		UndoMode.Incendiary:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Incendiary", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Incendiary_m", 1)
+			Goto CheckWeaponMode.Unequip
+		// Unload Ammo
+		/*
+		Put the ammo out of the "current weapon" into the weapon's own chamber,
+		and the reserve ammo back to its storage.
+		*/
+		CheckWeaponMode.Unequip:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Buckshot_m", 1, "CheckCurrentChamber.Buckshot")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Slug_m", 1, "CheckCurrentChamber.Slug")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Incendiary_m", 1, "CheckCurrentChamber.Incendiary")
+			Stop
+		CheckCurrentChamber.Buckshot:
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber.Buckshot")
+			Goto CheckCurrentReserve.Buckshot
+		CheckCurrentChamber.Slug:
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber.Slug")
+			Goto CheckCurrentReserve.Slug
+		CheckCurrentChamber.Incendiary:
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber.Incendiary")
+			Goto CheckCurrentReserve.Incendiary
+		UnloadChamber.Buckshot:
+			TNT1 A 0 A_TakeInventory("Current_Chamber", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Chamber_Buckshot", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber.Buckshot")
+			Goto CheckCurrentChamber.Buckshot
+		UnloadChamber.Slug:
+			TNT1 A 0 A_TakeInventory("Current_Chamber", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Chamber_Slug", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber.Slug")
+			Goto CheckCurrentChamber.Slug
+		UnloadChamber.Incendiary:
+			TNT1 A 0 A_TakeInventory("Current_Chamber", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Chamber_Incendiary", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber.Incendiary")
+			Goto CheckCurrentChamber.Incendiary
+		CheckCurrentReserve.Buckshot:
+			SHGN A 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve.Buckshot")
+			Goto PostDeselect
+		CheckCurrentReserve.Slug:
+			SHGN A 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve.Slug")
+			Goto PostDeselect
+		CheckCurrentReserve.Incendiary:
+			SHGN A 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve.Incendiary")
+			Goto PostDeselect
+		UnloadReserve.Buckshot:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("shell_buckshot", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve.Buckshot")
+			Goto CheckCurrentReserve.Buckshot
+		UnloadReserve.Slug:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("shell_slug", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve.Slug")
+			Goto CheckCurrentReserve.Slug
+		UnloadReserve.Incendiary:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("shell_incendiary", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve.Incendiary")
+			Goto CheckCurrentReserve.Incendiary
+			
+		// Weapon Aim/Zoom
+		Zoom:
+			Goto Zoom.ZNX
+			
+		// Toggle Firing Modes
+		AltFire:
+			Goto Toggle.WeaponDown
+		ApplyToggle:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Buckshot", 1, "CheckSwapOutChamber.Buckshot")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Slug", 1, "CheckSwapOutChamber.Slug")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Incendiary", 1, "CheckSwapOutChamber.Incendiary")
+			Stop
+		// Swap Out - Buckshot to Slug
+		CheckSwapOutChamber.Buckshot:
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "SwapOutChamber.Buckshot")
+			Goto CheckSwapOutReserve.Buckshot
+		SwapOutChamber.Buckshot:
+			TNT1 A 0 A_TakeInventory("Current_Chamber", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Chamber_Buckshot", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "SwapOutChamber.Buckshot")
+			Goto CheckSwapOutChamber.Buckshot
+		CheckSwapOutReserve.Buckshot:
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "SwapOutReserve.Buckshot")
+			Goto ToggleTo.Slug
+		SwapOutReserve.Buckshot:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("shell_buckshot", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "SwapOutReserve.Buckshot")
+			Goto CheckSwapOutReserve.Buckshot
+		ToggleTo.Slug:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Buckshot", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Slug", 1)
+			Goto CheckSwapInChamber.Slug
+		// Swap Out - Slug to Incendiary
+		CheckSwapOutChamber.Slug:
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "SwapOutChamber.Slug")
+			Goto CheckSwapOutReserve.Slug
+		SwapOutChamber.Slug:
+			TNT1 A 0 A_TakeInventory("Current_Chamber", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Chamber_Slug", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "SwapOutChamber.Slug")
+			Goto CheckSwapOutChamber.Slug
+		CheckSwapOutReserve.Slug:
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "SwapOutReserve.Slug")
+			Goto ToggleTo.Incendiary
+		SwapOutReserve.Slug:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("shell_slug", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "SwapOutReserve.Slug")
+			Goto CheckSwapOutReserve.Slug
+		ToggleTo.Incendiary:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Slug", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Incendiary", 1)
+			Goto CheckSwapInChamber.Incendiary
+		// Swap Out - Incendiary to Buckshot
+		CheckSwapOutChamber.Incendiary:
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "SwapOutChamber.Incendiary")
+			Goto CheckSwapOutReserve.Incendiary
+		SwapOutChamber.Incendiary:
+			TNT1 A 0 A_TakeInventory("Current_Chamber", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Chamber_Incendiary", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "SwapOutChamber.Incendiary")
+			Goto CheckSwapOutChamber.Incendiary
+		CheckSwapOutReserve.Incendiary:
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "SwapOutReserve.Incendiary")
+			Goto ToggleTo.Buckshot
+		SwapOutReserve.Incendiary:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("shell_incendiary", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "SwapOutReserve.Incendiary")
+			Goto CheckSwapOutReserve.Incendiary
+		ToggleTo.Buckshot:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Incendiary", 1)
+			TNT1 A 0 A_GiveInventory("ccShotgun_Buckshot", 1)
+			Goto CheckSwapInChamber.Buckshot
+		// Swap In - Buckshot
+		CheckSwapInChamber.Buckshot:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Buckshot", 1, "SwapInChamber.Buckshot")
+			Goto CheckSwapInReserve.Buckshot
+		SwapInChamber.Buckshot:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Chamber_Buckshot", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Buckshot", 1, "SwapInChamber.Buckshot")
+			Goto CheckSwapInChamber.Buckshot
+		CheckSwapInReserve.Buckshot:
+			TNT1 A 0 A_JumpIfInventory("shell_buckshot", 1, "SwapInReserve.Buckshot")
+			TNT1 A 0 A_PlaySound("weapons/sshotl")
+			SHGN A 0 A_Print("Buckshot")
+			Goto FinishToggle
+		SwapInReserve.Buckshot:
+			TNT1 A 0 A_TakeInventory("shell_buckshot", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("shell_buckshot", 1, "SwapInReserve.Buckshot")
+			Goto CheckSwapInReserve.Buckshot
+		// Swap In - Slug
+		CheckSwapInChamber.Slug:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Slug", 1, "SwapInChamber.Slug")
+			Goto CheckSwapInReserve.Slug
+		SwapInChamber.Slug:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Chamber_Slug", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Slug", 1, "SwapInChamber.Slug")
+			Goto CheckSwapInChamber.Slug
+		CheckSwapInReserve.Slug:
+			TNT1 A 0 A_JumpIfInventory("shell_slug", 1, "SwapInReserve.Slug")
+			TNT1 A 0 A_PlaySound("weapons/sshotl")
+			SHGN A 0 A_Print("Slug")
+			Goto FinishToggle
+		SwapInReserve.Slug:
+			TNT1 A 0 A_TakeInventory("shell_slug", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("shell_slug", 1, "SwapInReserve.Slug")
+			Goto CheckSwapInReserve.Slug
+		// Swap In - Incendiary
+		CheckSwapInChamber.Incendiary:
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Incendiary", 1, "SwapInChamber.Incendiary")
+			Goto CheckSwapInReserve.Incendiary
+		SwapInChamber.Incendiary:
+			TNT1 A 0 A_TakeInventory("ccShotgun_Chamber_Incendiary", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Chamber_Incendiary", 1, "SwapInChamber.Incendiary")
+			Goto CheckSwapInChamber.Incendiary
+		CheckSwapInReserve.Incendiary:
+			TNT1 A 0 A_JumpIfInventory("shell_incendiary", 1, "SwapInReserve.Incendiary")
+			TNT1 A 0 A_PlaySound("weapons/sshotl")
+			SHGN A 0 A_Print("Incendiary")
+			Goto FinishToggle
+		SwapInReserve.Incendiary:
+			TNT1 A 0 A_TakeInventory("shell_incendiary", 1)
+			TNT1 A 0 A_GiveInventory("Current_Reserve", 1)
+			TNT1 A 0 A_JumpIfInventory("shell_incendiary", 1, "SwapInReserve.Incendiary")
+			Goto CheckSwapInReserve.Incendiary
+		// Finish Toggle
+		FinishToggle:
+			Goto Toggle.WeaponUp
+			
+		// Firing Mode Actions	
+		Fire:
+			SHGN A 0 A_JumpIfNoAmmo("DryFire")
+			SHGN A 0 A_JumpIfInventory("ccShotgun_Buckshot", 1, "Fire.Buckshot")
+			SHGN A 0 A_JumpIfInventory("ccShotgun_Slug", 1, "Fire.Slug")
+			SHGN A 0 A_JumpIfInventory("ccShotgun_Incendiary", 1, "Fire.Incendiary")
+			Goto DryFire
+		Fire.Buckshot:
+			SHGN A 1 
+			SHGN B 2 A_GunFlash 
+			TNT1 A 0 A_PlaySound("weapons/shotgf")
+			SHGN A 1 Offset(0,35)
+			SHGN A 1 Offset(0,40) A_FireCustomMissile("shell_buckshot_p", FRandom(-2.0, 2.0), true, 0, 0, false, FRandom(-2.0, 2.0))
+			SHGN AAAA 0 A_FireCustomMissile("shell_buckshot_p", FRandom(-2.0, 2.0), False, 0, 0, false, FRandom(-2.0, 2.0))
+			Goto Recoil
+		Fire.Slug:
+			SHGN A 1 
+			SHGN B 2 A_GunFlash
+			TNT1 A 0 A_PlaySound("weapons/shotgf")
+			SHGN A 1 Offset(0,35)
+			SHGN A 1 Offset(0,40) A_FireCustomMissile("shell_slug_p", FRandom(-0.5, 0.5), true, 0, 0, false, FRandom(-0.5, 0.5))
+			Goto Recoil
+		Fire.Incendiary:
+			SHGN A 1 
+			SHGN B 2 A_GunFlash
+			TNT1 A 0 A_PlaySound("weapons/shotgf")
+			SHGN A 1 Offset(0,35)
+			SHGN A 1 Offset(0,40) A_FireCustomMissile("shell_incendiary_p", FRandom(-2.0, 2.0), true, 0, 0, false, FRandom(-2.0, 2.0))
+			SHGN AAAA 0 A_FireCustomMissile("shell_incendiary_p", FRandom(-2.0, 2.0), false, 0, 0, false, FRandom(-2.0, 2.0))
+			Goto Recoil
+		
+		// After-Fire Effects
+		Recoil:
+			SHGN A 0 A_SpawnItemEx("gunsmoke", 20, 0, 15, 1, 0, 0.5, 0)
+			SHGN A 0 A_SetPitch(pitch-1)
+			SHGN AA 1 A_SetPitch(pitch+0.25)
+			SHGN AA 1 A_SetPitch(pitch+0.25)
+			SHGN A 1 Offset(0, 38)
+			SHGN A 5 Offset(0, 35)
+			SHGN A 3
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Buckshot", 1, "Pump.Buckshot")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Slug", 1, "Pump.Slug")
+			TNT1 A 0 A_JumpIfInventory("ccShotgun_Incendiary", 1, "Pump.Incendiary")
+		Pump.Buckshot:
+			SHGN A 3
+			SHGN A 2 Offset(0,35)
+			SHGN A 2 Offset(0,40)
+			SHGN A 2 Offset(0,50)
+			SHGN A 1 Offset(0,60) 
+			SHGN A 3 Offset(0,70) A_SpawnItemEx("buckshotshell", 20, 3, 15, 0, FRandom(2.0, 5.0), FRandom(1.0, 2.0), 0)
+			SHGN A 0 
+			SHGN A 1 Offset(0,60)
+			SHGN A 2 Offset(0,50)
+			SHGN A 2 Offset(0,40)
+			SHGN A 2 Offset(0,35)
+			SHGN A 2
+			Goto Ready
+		Pump.Slug:
+			SHGN A 3
+			SHGN A 2 Offset(0,35)
+			SHGN A 2 Offset(0,40)
+			SHGN A 2 Offset(0,50)
+			SHGN A 1 Offset(0,60) 
+			SHGN A 3 Offset(0,70) A_SpawnItemEx("slugshell", 20, 3, 15, 0, FRandom(2.0, 5.0), FRandom(1.0, 2.0), 0)
+			SHGN A 0 
+			SHGN A 1 Offset(0,60)
+			SHGN A 2 Offset(0,50)
+			SHGN A 2 Offset(0,40)
+			SHGN A 2 Offset(0,35)
+			SHGN A 2
+			Goto Ready
+		Pump.Incendiary:
+			SHGN A 3
+			SHGN A 2 Offset(0,35)
+			SHGN A 2 Offset(0,40)
+			SHGN A 2 Offset(0,50)
+			SHGN A 1 Offset(0,60) 
+			SHGN A 3 Offset(0,70) A_SpawnItemEx("incendiaryshell", 20, 3, 15, 0, FRandom(2.0, 5.0), FRandom(1.0, 2.0), 0)
+			SHGN A 0 
+			SHGN A 1 Offset(0,60)
+			SHGN A 2 Offset(0,50)
+			SHGN A 2 Offset(0,40)
+			SHGN A 2 Offset(0,35)
+			SHGN A 2
+			Goto Ready
+			
+		// Weapon Reload
+		Reload:
+			SHGN A 0 A_JumpIfInventory("Current_Chamber", 8, "Ready") // Minimum to not need reload.
+			SHGN A 0 A_JumpIfInventory("Current_Reserve", 1, "StartReload")
+			Goto Ready
+		StartReload:
+			SHGN A 0
+			Goto Reload.WeaponDown
+		LoopReload:
+			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
+			TNT1 A 0 A_GiveInventory("Current_Chamber", 1)
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 8, "FinishReload") // Minimum to finish reload.
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "LoopReload")
+			Goto FinishReload
+		FinishReload:
+			TNT1 A 11
+			SHGN A 0
+			Goto Reload.WeaponUp
+	}
+}
+
+
+
+// Weapon Modes
+/*
+These are abstract actors native to the weapon, to allow multiple
+firing modes.
+*/
+actor ccShotgun_Buckshot : Inventory {
+	Tag "$WMT_SHOTGUN_BUCKSHOT"
+	Inventory.MaxAmount 1
+	+INVENTORY.INVBAR
+}
+actor ccShotgun_Slug : Inventory {
+	Tag "$WMT_SHOTGUN_SLUG"
+	Inventory.MaxAmount 1
+	+INVENTORY.INVBAR
+}
+actor ccShotgun_Incendiary : Inventory {
+	Tag "$WMT_SHOTGUN_INCENDIARY"
+	Inventory.MaxAmount 1
+	+INVENTORY.INVBAR
+}
+
+
+
+// Weapon Modes - Memory
+/*
+These are here so the system "remembers" what setting the gun had,
+without writing the Tag on the HUD.
+*/
+actor ccShotgun_Buckshot_m : Inventory {
+	Inventory.MaxAmount 1
+	+INVENTORY.PERSISTENTPOWER
+}
+actor ccShotgun_Slug_m : Inventory {
+	Inventory.MaxAmount 1
+	+INVENTORY.PERSISTENTPOWER
+}
+actor ccShotgun_Incendiary_m : Inventory {
+	Inventory.MaxAmount 1
+	+INVENTORY.PERSISTENTPOWER
+}
+
+
+
+// Weapon Chamber
+/*
+This is the ammunition inside the gun, so the game remembers how
+much was in it when pulling it out again.
+*/
+actor ccShotgun_Chamber_Buckshot : Ammo {
+	Inventory.MaxAmount 8
+}
+actor ccShotgun_Chamber_Slug : Ammo {
+	Inventory.MaxAmount 8
+}
+actor ccShotgun_Chamber_Incendiary : Ammo {
+	Inventory.MaxAmount 8
+}
+
+
+
+
+
+// Weapon-Swap Spawn
+/*
+This is the spawn object of the weapon.
+*/
+actor ccShotgunPickup : ccWeaponPickup 11301 {
+	/*
+	This is the amount of ammo the pickup provides when picked up.
+	*/
+	Accuracy 8
+	
+	/*
+	Identifies this actor class and derived classes as the named pickup.
+	This property needs to match the actor class's name.
+	*/
+	Species "ccShotgunPickup"
+
+	/*
+	This is the name printed on the HUD when using pickup.
+	It also displays in the pickup message.
+	*/
+	Tag "$WT_SHOTGUN"
+
+	States {
+		Spawn:
+			TNT2 A 0
+			Goto Init
+	}
+}

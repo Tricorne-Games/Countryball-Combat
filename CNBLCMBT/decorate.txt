@@ -1,0 +1,58 @@
+/*
+
+DECORATE
+
+This is the actor manifest. All actors are imported through here.
+
+This will need to be revised for any actors that you add, edit, or delete.
+
+*/
+
+// General
+#include "actors/ccplayer.txt" // Player
+#include "actors/ccabstracts.txt" // Abstracts
+#include "actors/ccweapondata.txt" // Weapon Class
+
+
+
+// Effects
+#include "actors/effects/splashes.txt" // Liquid Splashes
+#include "actors/effects/incendiaryspark.txt" // Incendiary Spark
+#include "actors/effects/hitpuff.txt" // Hit Puff
+#include "actors/effects/gunsmoke.txt" // Gun Smoke
+#include "actors/effects/smallbrass.txt" // Small Brass
+#include "actors/effects/largebrass.txt" // Large Brass
+#include "actors/effects/buckshotshell.txt" // Buckshot Shell
+#include "actors/effects/slugshell.txt" // Slug Shell
+#include "actors/effects/incendiaryshell.txt" // Incendiary Shell
+#include "actors/effects/missileexplosion.txt" // Missile Explosion
+#include "actors/effects/grenadeexplosion.txt" // Grenade Explosion
+
+// Items
+
+
+
+// Weapons
+// - Melee
+#include "actors/weapons/ccunarmed.txt" // Unarmed
+// - Ballistic
+#include "actors/weapons/ccpistol.txt" // Pistol
+#include "actors/weapons/ccshotgun.txt" // Shotgun
+#include "actors/weapons/ccautoshotgun.txt" // Auto Shotgun
+#include "actors/weapons/ccassaultrifle.txt" // Assault Rifle
+#include "actors/weapons/ccheavymachinegun.txt" // Heavy Machine Gun
+#include "actors/weapons/ccmissilelauncher.txt" // Missile Launcher
+#include "actors/weapons/ccsniperrifle.txt" // Sniper Rifle
+// - Throwable
+#include "actors/weapons/ccfraggrenade.txt" // Frag Grenade
+
+
+
+// Ammo Types
+#include "actors/ammo/bullet_small.txt" // Small Rounds
+#include "actors/ammo/bullet_large.txt" // Large Rounds
+#include "actors/ammo/shell_buckshot.txt" // Buckshot Shells
+#include "actors/ammo/shell_slug.txt" // Slug Shells
+#include "actors/ammo/shell_incendiary.txt" // Incendiary Shells
+#include "actors/ammo/missile.txt" // Missiles
+#include "actors/ammo/grenade_frag.txt" // Frag Grenades

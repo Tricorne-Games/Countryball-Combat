@@ -1,0 +1,9 @@
+/*
+
+SBARINFO
+
+*/
+
+#include "sbarinfodefs/hud.txt" // Default HUD
+#include "sbarinfodefs/mugshot.txt" // Mugshot
+#include "sbarinfodefs/automap.txt" // Automap

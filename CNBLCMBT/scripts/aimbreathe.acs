@@ -1,0 +1,150 @@
+/*
+
+Aim/Breathe Effect
+
+On skill levels harder than the easiest, a very slight amount
+of motion will show in the aim when standing still, simulating
+the player character breathing.
+
+*/
+
+// Initial
+#library "aimbreathe"
+
+#include "zcommon.acs"
+
+#import "glocomps.acs"
+
+
+
+// Scripts
+script "aimbreathe" ENTER {
+	// Verify the skill setting.
+    if (GameSkill() >= SKILL_EASY) {
+        SetActorProperty (0, APROP_Speed, 0.6);
+		
+		// "True" angle and pitch.
+		int true_angle = GetActorAngle(0);
+		int true_pitch = GetActorPitch(0);
+		
+		// "Initial" angle and pitch.
+		int angle;
+		int pitch;
+		
+		// Delta X and Y.
+		int dx = 0;
+		int dy = 0;
+		
+		while (True) {
+			
+			// Establish initial angle/pitch values.
+			angle = GetActorAngle(0);
+			pitch = GetActorPitch(0);
+			
+			// Set a tic delay to set the following "New" angle and pitch.
+			Delay(1);
+			
+			// "New" angle and pitch.
+			int new_angle = GetActorAngle(0);
+			int new_pitch = GetActorPitch(0);
+			
+			// Trues become the difference between News and Initials.
+			true_angle += new_angle - angle;
+			true_pitch += new_pitch - pitch;
+			
+			// Adjust the Trues between 0 and 1.
+			while (true_angle > 1.0) {
+				true_angle -= 1.0;
+			}
+			while (true_angle < 0.0) {
+				true_angle += 1.0;
+			}
+			if (true_pitch > 0.25) {
+				true_pitch = 0.25;
+			}
+			if (true_pitch < -0.25) {
+				true_pitch = -0.25;
+			}
+			
+			// Delta X2
+			int dx2;
+			
+			// Determine the new value of Delta X2.
+			if (angle < new_angle) {
+				if (abs(new_angle - angle) < abs(new_angle - (angle + 1.0))) {
+					dx2 = new_angle - angle;
+				}
+				else {
+					dx2 = new_angle - (angle + 1.0);
+				}
+			}
+			else {
+				if (abs(new_angle - angle) < abs(new_angle - angle + 1.0)) {
+					dx2 = new_angle - angle;
+				}
+				else {
+					dx2 = new_angle - angle + 1.0;
+				}
+			}
+			
+			// Velocity
+			int vel = abs(GetActorVelX(0)) + abs(GetActorVelY(0)) + abs(GetActorVelZ(0));
+			vel = FixedMul(vel, 0.001);
+			
+			// Setting new values to Deltas X and Y.
+			dx = FixedMul(dx + dx2, min(0.875 + vel, 0.99));
+			dy = FixedMul(dy + (new_pitch - pitch), min(0.825 + vel, 0.99));
+			
+			int loopy = FixedMul((Timer() << 16), 0.01);
+			int loopy2 = FixedMul((Timer() << 16), 0.02);
+			int mx = FixedMul(sin(loopy), 0.00024 + vel + abs(dx)/15);
+			int my = FixedMul(sin(loopy2), 0.00048 + vel + abs(dy)/15);
+			
+			dx += mx;
+			dy += my;
+			
+			// Compare and adjust Initial angle.
+			if (new_angle < true_angle) {
+				if (abs(true_angle - new_angle) < abs(true_angle - (new_angle + 1.0))) {
+					angle = ((new_angle + dx/15) + true_angle)/2;
+				}
+				else {
+					angle = ((new_angle + dx/15) + (true_angle - 1.0))/2;
+				}
+			}
+			else {
+				if (abs(true_angle - new_angle) < abs(true_angle - new_angle + 1.0)) {
+					angle = ((new_angle + dx/15) + true_angle)/2;
+				}
+				else {
+					angle = ((new_angle + dx/15) + (true_angle + 1.0))/2;
+				}
+			}
+			
+			// Set Initial pitch.
+			pitch = ((new_pitch + dy/15) + true_pitch*2)/3;
+			
+			// Adjust the Initials between 0 and 1.
+			while (angle > 1.0) {
+				angle -= 1.0;
+			}
+			while (angle < 0.0) {
+				angle += 1.0;
+			}
+			if (pitch > 0.25) {
+				pitch = 0.25;
+			}
+			if (pitch < -0.25) {
+				pitch = -0.25;
+			}
+			
+			// Establish the angle and pitch as current.
+			ChangeActorAngle(0, angle, True);
+			ChangeActorPitch(0, pitch, True);
+		}
+	}
+	// Skill settings not used.
+	else {
+		Delay(1);
+	}
+}

@@ -1,0 +1,25 @@
+/*
+
+Grenade Toss Timer
+
+This runs a timer before throwing a grenade so it can explode
+sooner. If not thrown in time, it explodes in the user's hand.
+
+*/
+
+// Initials
+#include "zcommon.acs"
+
+// Scripts
+script "GrenadeFire" (void) {
+	int before = GetPlayerInput(-1, INPUT_OLDBUTTONS);
+	int after = GetPlayerInput(-1, INPUT_BUTTONS);
+
+	GiveInventory("ChargeTimer", 1);
+
+	// Press and release throw.
+	if ((before & BT_ATTACK)
+	&& !(after & BT_ATTACK)) {
+	  GiveInventory("ThrowGrenade", 1);
+	}
+}

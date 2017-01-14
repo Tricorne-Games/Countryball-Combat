@@ -1,0 +1,15 @@
+/*
+
+SNDINFO
+
+*/
+
+// WEAPONS
+// Silent Shot
+sounds/sileshot sileshot
+// Ricochets
+
+
+
+// VOICES
+// Female

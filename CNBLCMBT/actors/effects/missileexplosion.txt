@@ -1,0 +1,44 @@
+/*
+
+Effect - Missile Explosion
+
+The effect that happens when a missile hits.
+
+*/
+
+actor MissileExplosion {
+	+NOBLOCKMAP
+	+ALLOWPARTICLES
+	+RANDOMIZE
+	+NOBLOOD
+	+NOGRAVITY
+	RenderStyle Translucent
+	Alpha 0.5
+	VSpeed 15
+	Mass 3
+	
+	States {
+		Spawn:
+			MISL B 2 Bright
+			MISL B 2 Bright A_SetScale(1.2, 1.2)
+			MISL C 4 Bright 
+			MISL D 1 Bright A_SetScale(1.2, 1.2)
+			MISL D 1 Bright
+			MISL D 1 Bright 
+			MISL D 1 Bright A_SetScale(1.4, 1.4)
+			MISL D 1 Bright 
+			MISL D 1 Bright A_FadeOut(0.25)
+			MISL D 1 Bright A_SetScale(1.6, 1.6)
+			MISL D 1 Bright 
+			MISL D 1 Bright A_FadeOut(0.05)
+			MISL D 1 Bright A_SetScale(1.8, 1.8)
+			MISL D 1 Bright 
+			MISL D 1 Bright A_FadeOut(0.05)
+			MISL D 1 Bright A_SetScale(2.0, 2.0)
+			MISL D 1 Bright 
+			MISL D 1 Bright A_FadeOut(0.05)
+			MISL D 1 Bright A_FadeOut(0.05)
+			MISL D 1 Bright A_FadeOut(0.05)
+			Stop
+	}
+}

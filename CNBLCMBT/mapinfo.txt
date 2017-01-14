@@ -1,0 +1,22 @@
+/*
+
+MAPINFO
+
+Specific MAPINFO definitions are stored in the /mapinfodefs/ directory.
+This is the main lump that imports them together.
+
+*/
+
+include mapinfodefs/gameinfodefs.txt
+
+include mapinfodefs/episodedefs.txt
+
+include mapinfodefs/mapdefs.txt
+
+include mapinfodefs/clusterdefs.txt
+
+include mapinfodefs/intermissiondefs.txt
+
+include mapinfodefs/skilldefs.txt
+
+include mapinfodefs/automapdefs.txt

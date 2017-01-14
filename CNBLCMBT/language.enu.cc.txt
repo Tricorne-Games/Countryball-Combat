@@ -1,0 +1,241 @@
+/*
+
+LANGUAGE - US English (Countryball Combat)
+
+This is an extension of the "US English" default language lump,
+to implement Countryball Combat assets for that language.
+
+*/
+
+[enu default]
+
+// HUD Labels
+HL_ARMOR = "Armor";
+HL_HEALTH = "Health";
+HL_AIR = "Air";
+HL_WARMTH = "Warmth";
+
+// Weapon Tags
+WT_UNARMED = "Unarmed";
+WT_PISTOL = "Pistol";
+WT_REVOLVER = "Revolver";
+WT_SHOTGUN = "Shotgun";
+WT_SUBMACHINEGUN = "Sub-Machine Gun";
+WT_AUTOSHOTGUN = "Auto Shotgun";
+WT_ASSAULTRIFLE = "Assault Rifle";
+WT_HEAVYMACHINEGUN = "Heavy Machine Gun";
+WT_MISSILELAUNCHER = "Missile Launcher";
+WT_SNIPERRIFLE = "Sniper Rifle";
+
+// Weapon Pickup Messages
+/*
+DEPRECATED
+*/
+WPU_PISTOL = "You picked up a pistol! Spiffy!";
+WPU_SHOTGUN = "You picked up a shotgun! Chik-chik-BOOM!";
+WPU_SUBMACHINEGUN = "You picked up a sub-machine gun! Beautiful!";
+WPU_AUTOSHOTGUN = "You picked up an auto shotgun! BOOM-BOOM-BOOM!";
+WPU_ASSAULTRIFLE = "You picked up an assault rifle! Rat-tat-tat-tat!";
+WPU_HEAVYMACHINEGUN = "You picked up a heavy machine gun! Tear 'em up!";
+WPU_MISSILELAUNCHER = "You picked up a missile launcher! KABOOM!";
+WPU_SNIPERRIFLE = "You picked up a sniper rifle! Pick 'em off...";
+
+// Weapon Mode Tags
+WMT_PISTOL_UNSILENCED = "Small Bullet (Loud)";
+WMT_PISTOL_SILENCED = "Small Bullet (Silent)";
+WMT_SHOTGUN_BUCKSHOT = "Buckshot";
+WMT_SHOTGUN_SLUG = "Slug";
+WMT_SHOTGUN_INCENDIARY = "Incendiary";
+WMT_SUBMACHINEGUN_AUTOMATIC = "Small Bullet (Auto)";
+WMT_SUBMACHINEGUN_SEMIAUTO = "Small Bullet (Semi)";
+WMT_AUTOSHOTGUN_BUCKSHOT = "Buckshot";
+WMT_AUTOSHOTGUN_SLUG = "Slug";
+WMT_AUTOSHOTGUN_INCENDIARY = "Incendiary";
+WMT_ASSAULTRIFLE_AUTOMATIC = "Large Bullet (Auto)";
+WMT_ASSAULTRIFLE_SEMIAUTO = "Large Bullet (Semi)";
+WMT_HEAVYMACHINEGUN_BOXFED = "Large Bullet (Box)";
+WMT_MISSILELAUNCHER_MISSILE = "Missile";
+WMT_SNIPERRIFLE_ZOOM2X = "Zoom 2X";
+WMT_SNIPERRIFLE_ZOOM3X = "Zoom 3X";
+WMT_SNIPERRIFLE_ZOOM4X = "Zoom 4X";
+WMT_SNIPERRIFLE_ZOOM5X = "Zoom 5X";
+
+// Ammo Tags
+AT_BULLETSMALL = "Small Bullets";
+AT_BULLETLARGE = "Large Bullets";
+AT_SHELLBUCKSHOT = "Buckshot Shells";
+AT_SHELLSLUG = "Slug Shells";
+AT_SHELLINCENDIARY = "Incendiary Shells";
+AT_ROCKET = "Rocket";
+
+// Ammo Pickup Messages
+APU_BULLETSMALL_MAG = "You picked up a magazine of small bullets.";
+APU_BULLETLARGE_MAG = "You picked up a magazine of large bullets.";
+APU_SHELLBUCKSHOT_SOME = "You picked up some buckshot shells.";
+APU_SHELLSLUG_SOME = "You picked up some slug shells.";
+APU_SHELLINCENDIARY_SOME = "You picked up some incendiary shells.";
+APU_MISSILE = "You picked up a missile.";
+APU_MISSILE_SOME = "You picked up some missiles.";
+
+// Item Pickup Messages
+
+// Miscellaneous
+SECRETMESSAGE = "Of findings secret!";
+
+// Quit Messages
+QMSG_1 = "Are you sure you want to quit?";
+QMSG_2 = "Are yuo of leavings so soon?";
+QMSG_3 = "Finished removing already?";
+QMSG_4 = "Yuo cannot into fun, like\nPoland cannot into space.";
+
+// General Obituaries
+OB_KILL1 = "%o got killed.";
+OB_KILL2 = "%k killed %o.";
+OB_BLOWUP1 = "%o blew up.";
+OB_BLOWUP2 = "%k blew up %o.";
+OB_MOWDOWN = "%k mowed down %o.";
+OB_SLASH = "%k cut up %o."
+OB_BEATEN = "%k beat %o into a pulp.";
+OB_SPLATTER = "%o got splattered.";
+OB_ICE = "%o got chilly.";
+OB_FIRE = "Things got too hot for %o.";
+OB_ELECTRIC = "%o had a shocking experience!";
+OB_GAS = "%o got choked up. What a gas!";
+OB_FALL1 = "%o had a nice trip and will see you next Fall!";
+OB_FALL2 = "%o fell head over heels in death!";
+
+// Weapon-Specific Obituaries
+// (If any.)
+
+// Main Menu Items
+MM_NEWGAME = "New Game";
+MM_LOADGAME = "Load Game";
+MM_SAVEGAME = "Save Game";
+MM_OPTIONS = "Options";
+MM_ABOUT = "About";
+MM_CREDITS = "Credits";
+MM_QUITGAME = "Quit Game";
+
+// Episode Menu
+EM_TITLE = "Episode Select";
+
+// Skill Menu
+SM_TITLE = "Skill Select";
+// Skill Labels
+SL_1 = "Cannot into Skill";
+SL_2 = "Of Reasonable";
+SL_3 = "Gib Challenge!";
+SL_4 = "O KURWA!";
+SL_5 = "ANSCHLUSS ZEIT!";
+// Skill Level Warning Messages
+SLWMSG_1 = "You big baby!\nTry something harder!\n\nContinue anyway?";
+SLWMSG_4 = "Are yuo of sure?\n\nThis skill level will of\nkickings your ass many hard.";
+SLWMSG_5 = "Stay low, go fast.\nKill first, die last.\nOne shot, one kill.\nNo luck, all skill.\n\nThink yuo can of doings?";
+
+// Load Game Menu
+LGM_TITLE = "Load Game";
+
+// Save Game Menu
+SGM_TITLE = "Save Game";
+
+// About Pages
+ABOUT_H0 = "ABOUT";
+ABOUT_H1 = "STORY";
+ABOUT_S1 =
+"The Reichtangle is up to his annexing antics\n"
+"again! This time, he sends out his\n"
+"Anschlusslings after you...\n"
+"\n"
+"But you are not of havings it!\n"
+"\n"
+"You must blaze your way past hordes of\n"
+"the Reichtangle's minions and many traps\n"
+"to reach and defeat the Reichtangle.\n"
+"\nGood luck!";
+ABOUT_H2 = "SETUP";
+ABOUT_S2 =
+"To set up your controls, select the 'Options'\n"
+"choice in the Main Menu, then select\n"
+"'Customize Controls'. This will help you\n"
+"adjust the normal set of controls for your\n"
+"gaming device(s).\n"
+"\n"
+"To set up your character, select the 'Options'\n"
+"choice in the Main Menu, then select 'Player\n"
+"Setup'. This will help you choose your\n"
+"character's settings.";
+ABOUT_H3 = "HOW TO PLAY";
+ABOUT_S3 =
+"Each level has a mission, such as a switch, a\n"
+"puzzle, or eradicate all enemies. As you go at\n"
+"it, you must survive the attacks of the\n"
+"enemies, fight back, avoid hazards, and\n"
+"collect items to help you on your way.\n"
+"\n"
+"These levels are bundled as sets, where the\n"
+"last level of a set will have the Reichtangle\n"
+"you need to take down to win the set.\n"
+"\n"
+"Have fun removing!";
+
+
+
+
+
+// Credits Page
+/*
+Except for translating the non-name parts of this text,
+there is no reason to touch this section. Credits are only kept
+here for cleanliness in the MENUDEF where these are used.
+*/
+CREDITS_H0 = "CREDITS";
+CREDITS_SANTO = "Santo Ciaravino";
+CREDITS_GLAICE = "Glaice";
+CREDITS_WELBY = "Welby";
+CREDITS_ZDCF = "ZDoom Community/Forums";
+
+// Page 1
+CREDITS_H10 = "Countryball Combat - by Tricorne Games";
+CREDITS_S10 =
+"'Countryball Combat' is a shooter game\n"
+"based on the popular 'Countryballs'\n"
+"webcomics. Choose your ball, and get your\n"
+"guns blazing!\n"
+"\n"
+"Credits go to too many to conveniently list\n"
+"in this Credit section. They are all listed in\n"
+"the 'CREDITS.TXT' file. However, the next page\n"
+"starts the bigger credits to list...";
+
+// Page 2
+CREDITS_H20 = "Game Design";
+CREDITS_H21 = "Level Design";
+CREDITS_H22 = "Graphics";
+CREDITS_H23 = "Sounds";
+CREDITS_H24 = "Programming";
+CREDITS_H29 = "Advisory/Assistance";
+
+// Page 3
+CREDITS_H30 = "IWAD Resource Archive";
+CREDITS_S30 =
+"'FreeDM', a variant of 'Freedoom'. Created\n"
+"by the Freedoom community. Released under\n"
+"FreeBSD. https://freedoom.github.io/";
+CREDITS_H31 = "Other Resources";
+CREDITS_S31 =
+"All resources used to make this game were\n"
+"examined, or directly produced, to ensure\n"
+"that the game content falls within public-\n"
+"domain/CC0, or other free/open access, to\n"
+"encourage public creative benefit.\n"
+"Each credit can be found in 'CREDITS.TXT'.";
+
+// Page 4
+CREDITS_H40 = "Countryballs";
+CREDITS_S40 =
+"'Countryballs' are a type of Internet-made\n"
+"webcomic that have no designated owner. It\n"
+"is openly available for anyone's use.";
+CREDITS_H41 = "Players";
+CREDITS_S41 = "You!";
+CREDITS_TY = "Thank you for playing!";

@@ -1,0 +1,6 @@
+/*
+
+MAPINFO - Cluster Definitions
+
+*/
+

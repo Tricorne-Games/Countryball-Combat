@@ -1,0 +1,27 @@
+/*
+
+Effect - Incendiary Shot Spark
+
+The fire effect when an incendiary shot hits.
+
+*/
+
+actor IncendiarySpark {
+	+NOBLOCKMAP
+	+ALLOWPARTICLES
+	+RANDOMIZE
+	+NOBLOOD
+	+NOGRAVITY
+	RenderStyle Translucent
+	Alpha 0.5
+	VSpeed 5
+	
+	States {
+		Spawn:
+			INSP A 1 Bright
+			INSP B 2
+		Melee:
+			INSP CD 2
+			Stop
+	}
+}

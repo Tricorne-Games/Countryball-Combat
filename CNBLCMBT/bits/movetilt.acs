@@ -1,0 +1,64 @@
+/*
+
+Move Tilt
+
+When the player is moving, it will tilt the camera,
+relative to the player's speed.
+
+*/
+
+// Initials
+#library "movetilt"
+
+#include "zcommon.acs"
+
+#define VELOCITY_MULT 0.06 // Player's moving speed.
+#define ROLLSPEED 0.027 // Camera roll speed. Smaller numbers reduce speed.
+#define MAXROLLANGLE 0.005 // Maximum angle to allow roll. Smaller numbers reduce roll amount.
+
+// Return velocity.
+function int GetVelocity(void) {
+	return VectorLength(GetActorVelX(0), GetActorVelY(0));
+}
+
+
+
+script "movetilt" ENTER {
+	while (True) {
+		int angle;
+		int roll;
+		int velocity;
+		int cfg_old;
+		int cfg = GetCVar("cl_MoveTilt");
+
+		if (cfg) {
+			// Get the player's velocity.
+			velocity = FixedMul(GetVelocity(), VELOCITY_MULT);
+
+			// Increment the angle.
+			angle += ROLLSPEED;
+
+			// Clamp the angle amount.
+			if (angle >= 1.0 || angle < 0.0)
+			{
+				angle = 0;
+			}
+
+			// Calculate the roll.
+			roll = sin(angle);
+			roll = FixedMul(roll, MAXROLLANGLE);
+			roll = FixedMul(roll, velocity);
+
+			// Apply the roll.
+			ChangeActorRoll(0, roll, True);
+		}
+		// Check the CVAR for changes to reset the tilt.
+		if (cfg_old != cfg) {
+			cfg_old = cfg;
+			if (!cfg) {
+				ChangeActorRoll(0, 0, True);
+			}
+		}		
+		Delay(1);
+	}
+}

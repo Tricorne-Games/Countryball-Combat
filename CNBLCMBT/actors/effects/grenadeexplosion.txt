@@ -1,0 +1,44 @@
+/*
+
+Effect - Grenade Explosion
+
+The effect that happens when a grenade explodes.
+
+*/
+
+actor GrenadeExplosion {
+	+NOBLOCKMAP
+	+ALLOWPARTICLES
+	+RANDOMIZE
+	+NOBLOOD
+	+NOGRAVITY
+	RenderStyle Translucent
+	Alpha 0.5
+	VSpeed 15
+	Mass 3
+	
+	States {
+		Spawn:
+			BEXP A 2 Bright
+			BEXP B 2 Bright A_SetScale(1.2, 1.2)
+			BEXP C 4 Bright 
+			BEXP D 1 Bright A_SetScale(1.2, 1.2)
+			BEXP D 1 Bright
+			BEXP D 1 Bright 
+			BEXP D 1 Bright A_SetScale(1.4, 1.4)
+			BEXP D 1 Bright 
+			BEXP D 1 Bright A_FadeOut(0.25)
+			BEXP D 1 Bright A_SetScale(1.6, 1.6)
+			BEXP D 1 Bright 
+			BEXP E 1 Bright A_FadeOut(0.05)
+			BEXP E 1 Bright A_SetScale(1.8, 1.8)
+			BEXP E 1 Bright 
+			BEXP E 1 Bright A_FadeOut(0.05)
+			BEXP E 1 Bright A_SetScale(2.0, 2.0)
+			BEXP E 1 Bright 
+			BEXP E 1 Bright A_FadeOut(0.05)
+			BEXP E 1 Bright A_FadeOut(0.05)
+			BEXP E 1 Bright A_FadeOut(0.05)
+			Stop
+	}
+}

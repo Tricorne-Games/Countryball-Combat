@@ -1,0 +1,89 @@
+/*
+
+Ice Water
+
+When an actor goes into this type of sector, they will start
+to lose heat, followed by damage when too cold.
+
+When making these sectors, do not use "Transfer_Heights".
+Instead, use "Set3DFloor".
+
+*/
+
+// Initials
+
+#library "icewater"
+
+#include "zcommon.acs"
+
+#libdefine DAMAGE 15
+#libdefine BODYCOOLDOWN 35 * 5
+#libdefine PLAYER_MAXCOUNT 8
+
+bool inIceWater[PLAYER_MAXCOUNT];
+
+
+
+// Scripts
+
+// Do Ice Water Damage
+/*
+This code is to be executed from the level's own scripts.
+Make an array of each ice water's control sector's tag
+numbers, and run through it in a for loop.
+*/
+script "DoIWaterDamage" (int sectag) {
+	SectorDamage(sectag,
+		DAMAGE,
+		"Ice",
+		"IceWaterProtect",
+		DAMAGE_PLAYERS|DAMAGE_NONPLAYERS);
+}
+
+// Body Cooldown
+/*
+A timer for how long the player can stay undamaged in ice water
+before losing the "IceWaterProtect" inventory and suffering damage.
+*/
+script "BodyCooldown" ENTER {
+	int pnum = PlayerNumber();
+	int cooldown = BODYCOOLDOWN;
+	GiveInventory("IceWaterProtect", 1);
+	while (True) {
+		if (inIceWater[pnum]
+		&& GetActorProperty(0, APROP_Waterlevel) >= 1) {
+			if (cooldown <= 0) {
+				TakeInventory("IceWaterProtect", 1);
+			}
+			else {
+				cooldown--;
+			}
+			SetFont("CONFONT");
+			HudMessageBold(s:"Warmth"; HUDMSG_PLAIN, 3, CR_LIGHTBLUE, 0.25, 0.075, 0.1);
+			SetFont("HUDFONT_DOOM");
+			HudMessageBold(i:cooldown/35; HUDMSG_PLAIN, 4, CR_LIGHTBLUE, 0.25, 0.1, 0.1);
+		}
+		else if (cooldown < BODYCOOLDOWN) {
+			if ((cooldown/35) < 5) {
+				SetFont("CONFONT");
+				HudMessageBold(l:"HL_WARMTH"; HUDMSG_PLAIN, 3, CR_LIGHTBLUE, 0.25, 0.075, 0.1);
+				SetFont("HUDFONT_DOOM");
+				HudMessageBold(i:cooldown/35; HUDMSG_PLAIN, 4, CR_LIGHTBLUE, 0.25, 0.1, 0.1);
+			}
+			cooldown++; // Gain body heat gradually.
+			//cooldown = DEF_BODYCOOLDOWN; // ALTERNATIVE: Gain body heat instantly.
+			GiveInventory("IceWaterProtect", 1);
+		}
+		Delay(1);
+    }
+}
+
+// Ice Water Switch
+/*
+Activates the cooldown routine whether or not the player is in the sector.
+This script must be attached to "ActorENTERsSector" and "ActorLeavesSector"
+things inside the map's water sectors (NOT the control sectors) to work.
+*/
+script "InIceWater" (void) {
+	inIceWater[PlayerNumber()] ^= True;
+}

@@ -1,0 +1,75 @@
+CREDITS
+
+Countryball Combat - 20XX by Tricorne Games
+
+
+
+Game Design
+=
+Santo Ciaravino
+
+
+
+Advisory
+=
+Glaice
+Blue Shadow
+Lud
+Nash
+Others of the ZDoom Community. ( http://forum.zdoom.org )
+
+
+
+Technology
+=
+This game was developed as a PWAD modular overlay,
+using the following systems as its base:
+
+FreeDM IWAD - https://freedoom.github.io/
+GLOOME - http://forum.zdoom.org/viewtopic.php?t=48994
+
+
+
+Graphics
+=
+Santo Ciaravino
+
+
+
+Sound/Music
+=
+Welby
+
+
+
+Programming
+=
+Santo Ciaravino
+
+
+
+Level Design
+=
+NO ONE YET!
+
+
+
+Content
+=
+All other content not directly created by the Countryball Combat
+development team are public-domain/CC0 materials or used under
+other free/open (libre) licenses.
+
+The Countryballs are an Internet-generated comic, produced and shared
+by a large and international community of fans and artists, and thus
+does not and will not belong to any single proprietor.
+
+
+
+Players
+=
+You!
+
+
+
+Thank yuo for of playings!

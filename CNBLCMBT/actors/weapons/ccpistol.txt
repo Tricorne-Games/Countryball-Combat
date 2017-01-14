@@ -1,0 +1,343 @@
+/*
+
+Weapon - Pistol
+
+A small handgun. Initial starting firearm. Can be silenced.
+
+When loud, it is less accurate, but more powerful.
+
+When silent, it is more accurate, but less powerful.
+
+*/
+
+actor ccPistol : ccBallistic replaces Pistol {
+	// Text Info
+	Tag "$WT_PISTOL"
+	//Obituary ""
+	
+	// Traits
+	+Weapon.NOALERT
+	
+	// Sounds
+	//Weapon.UpSound "sound"
+	//Weapon.ReadySound "sound"
+	//AttackSound "weapons/dspistol"
+
+	// States
+	States {
+		// Weapon Selection
+		/*
+		This is the set of startup actions when selecting the weapon.
+		*/
+		Select:
+			Goto StartSelect
+		PrepWeapon:
+			// Apply weapon's weight.
+			TNT1 A 0 A_GiveInventory("WeaponWeight", 5)
+			// Swapping from another weapon to this weapon.
+			TNT1 A 0 A_JumpIfInventory("ccPistol_Unsilenced_m", 1, "PrepMode.Unsilenced")
+			TNT1 A 0 A_JumpIfInventory("ccPistol_Silenced_m", 1, "PrepMode.Silenced")
+			// Starting a map with this weapon.
+			TNT1 A 0 A_JumpIfInventory("ccPistol_Unsilenced", 1, "CheckWeaponChamber")
+			TNT1 A 0 A_JumpIfInventory("ccPistol_Silenced", 1, "CheckWeaponChamber")
+			// If the player never had the gun yet, give this weapon's default mode.
+			PSTL A 0 A_GiveInventory("ccPistol_Unsilenced", 1)
+			Goto CheckWeaponChamber
+		// Mode Preparation
+		/*
+		This turns the weapon's mode in memory into the active weapon mode on the HUD.
+		*/
+		PrepMode.Unsilenced:
+			PSTL A 0 A_TakeInventory("ccPistol_Unsilenced_m", 1)
+			PSTL A 0 A_GiveInventory("ccPistol_Unsilenced", 1)
+			Goto CheckWeaponChamber
+		PrepMode.Silenced:
+			PSTL F 0 A_TakeInventory("ccPistol_Silenced_m", 1)
+			PSTL F 0 A_GiveInventory("ccPistol_Silenced", 1)
+			Goto CheckWeaponChamber
+		// Ammo Loading
+		/*
+		This brings all the ammo from both the weapon itself and the type,
+		into the "current weapon" and "current reserve" slots to read how
+		much ammo is available for the gun.
+		*/
+		CheckWeaponChamber:
+			"####" "#" 0 A_JumpIfInventory("ccPistol_Chamber", 1, "LoadChamber")
+			Goto CheckWeaponReserve
+		LoadChamber:
+			"####" "#" 0 A_TakeInventory("ccPistol_Chamber", 1)
+			"####" "#" 0 A_GiveInventory("Current_Chamber", 1)
+			"####" "#" 0 A_JumpIfInventory("ccPistol_Chamber", 1, "LoadChamber")
+			Goto CheckWeaponChamber
+		CheckWeaponReserve:
+			"####" "#" 0 A_JumpIfInventory("bullet_small", 1, "LoadReserve")
+			Goto PostSelect
+		LoadReserve:
+			"####" "#" 0 A_TakeInventory("bullet_small", 1)
+			"####" "#" 0 A_GiveInventory("Current_Reserve", 1)
+			"####" "#" 0 A_JumpIfInventory("bullet_small", 1, "LoadReserve")
+			Goto CheckWeaponReserve
+		// Active Weapon
+		/*
+		The weapon is now active. Run the routines necessary.
+		*/
+		Ready:
+			PSTL A 0 A_JumpIfInventory("ccPistol_Unsilenced", 1, "Ready.Unsilenced")
+			PSTL F 0 A_JumpIfInventory("ccPistol_Silenced", 1, "Ready.Silenced")
+			Stop
+		Ready.Unsilenced:
+			PSTL A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+			Goto CheckReady
+		Ready.Silenced:
+			PSTL F 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+			Goto CheckReady
+		AmmoReady:
+			"####" "#" 0 A_JumpIfInventory("Current_Chamber", 16, "LimitChamber")
+			"####" "#" 0 A_JumpIfInventory("Current_Reserve", 801, "LimitReserve")
+			"####" "#" 0 A_JumpIfInventory("bullet_small", 1, "PushReserve")
+			Goto Ready
+		// Push Reserve Ammo
+		/*
+		When collecting ammo for this active weapon, make sure all of its
+		related ammo in reserve gets pushed to the "current reserve" so the
+		player can see how much ammo total of that type.
+		*/
+		PushReserve:
+			TNT1 A 0 A_TakeInventory("bullet_small", 1)
+			Goto InsertReserve
+		// Deactivate Weapon
+		/*
+		When the user puts down the weapon for another, run the routines that
+		pack away all the ammo appropriately, set the weapon mode to memory,
+		and finally end use of the weapon. This works like a reverse of
+		bringing the weapon up.
+		*/
+		Deselect:
+			PSTL A 0 A_JumpIfInventory("ccPistol_Unsilenced", 1, "UndoMode.Unsilenced")
+			PSTL F 0 A_JumpIfInventory("ccPistol_Silenced", 1, "UndoMode.Silenced")
+			Stop
+		// Mode Memory
+		/*
+		Remember the mode the gun had before putting away, and keep the tag
+		name out of the HUD.
+		*/
+		UndoMode.Unsilenced:
+			PSTL A 0 A_TakeInventory("ccPistol_Unsilenced", 1)
+			PSTL A 0 A_GiveInventory("ccPistol_Unsilenced_m", 1)
+			Goto CheckCurrentChamber
+		UndoMode.Silenced:
+			PSTL F 0 A_TakeInventory("ccPistol_Silenced", 1)
+			PSTL F 0 A_GiveInventory("ccPistol_Silenced_m", 1)
+			Goto CheckCurrentChamber
+		// Unload Ammo
+		/*
+		Put the ammo out of the "current weapon" into the weapon's own chamber,
+		and the reserve ammo back to its storage.
+		*/
+		UnloadChamber:
+			"####" "#" 0 A_TakeInventory("Current_Chamber", 1)
+			"####" "#" 0 A_GiveInventory("ccPistol_Chamber", 1)
+			"####" "#" 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber")
+			Goto CheckCurrentChamber
+		UnloadReserve:
+			"####" "#" 0 A_TakeInventory("Current_Reserve", 1)
+			"####" "#" 0 A_GiveInventory("bullet_small", 1)
+			"####" "#" 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve")
+			Goto PostDeselect
+			
+		// Weapon Aim/Zoom
+		Zoom:
+			//Put a zoom frame here before going to the zoom.
+			Goto Zoom.ZNX
+			
+		// Toggle Firing Modes
+		AltFire:
+			Goto Toggle.WeaponDown
+		Toggle.WeaponDown:
+			"####" "#" 1 Offset(0,35)
+			"####" "#" 1 Offset(0,38)
+			"####" "#" 1 Offset(0,44)
+			"####" "#" 1 Offset(0,52)
+			"####" "#" 1 Offset(0,62)
+			"####" "#" 1 Offset(0,72)
+			"####" "#" 1 Offset(0,82)
+			Goto ApplyToggle
+		ApplyToggle:
+			TNT1 A 0 A_JumpIfInventory("ccPistol_Unsilenced", 1, "ApplyToggle.UtoS")
+			TNT1 A 0 A_JumpIfInventory("ccPistol_Silenced", 1, "ApplyToggle.StoU")
+			Stop
+		ApplyToggle.UtoS:
+			TNT1 A 0 A_TakeInventory("ccPistol_Unsilenced", 1)
+			TNT1 A 0 A_GiveInventory("ccPistol_Silenced", 1)
+			TNT1 A 0 A_PlaySound("weapons/sshotl")
+			PSTL F 0 A_Print("Silenced")
+			Goto Toggle.WeaponUp
+		ApplyToggle.StoU:
+			TNT1 A 0 A_TakeInventory("ccPistol_Silenced", 1)
+			TNT1 A 0 A_GiveInventory("ccPistol_Unsilenced", 1)
+			TNT1 A 0 A_PlaySound("weapons/sshotl")
+			PSTL A 0 A_Print("Unsilenced")
+			Goto Toggle.WeaponUp
+		Toggle.WeaponUp:
+			"####" "#" 1 Offset(0,82)
+			"####" "#" 1 Offset(0,72)
+			"####" "#" 1 Offset(0,62)
+			"####" "#" 1 Offset(0,52)
+			"####" "#" 1 Offset(0,44)
+			"####" "#" 1 Offset(0,38)
+			"####" "#" 1 Offset(0,35)
+			Goto Ready
+			
+		// Firing Mode Actions
+		Fire:
+			TNT1 A 0 A_JumpIfInventory("ccPistol_Silenced", 1, "Fire.Silenced")
+			TNT1 A 0 A_JumpIfNoAmmo("DryFire.Unsilenced")
+			PSTL B 1 A_GunFlash
+			PSTL C 1 A_PlaySound("weapons/pistol")
+			TNT1 A 0 A_AlertMonsters
+			PSTL C 1 A_FireCustomMissile("bullet_small_p", FRandom(-0.5, 0.5), true, 0, 0, false, FRandom(-0.5, 0.5))
+			PSTL C 1 A_SpawnItemEx("smallbrass", 20, 3, 20, 0, FRandom(2.0, 5.0), FRandom(1.0, 2.0), 0)
+			Goto Recoil.Unsilenced
+		Fire.Silenced:
+			TNT1 A 0 A_JumpIfNoAmmo("DryFire.Silenced")
+			PSTL G 1 A_GunFlash
+			PSTL H 1 A_PlaySound("sounds/sileshot")
+			PSTL H 1 A_FireCustomMissile("bullet_small_p_silenced", FRandom(-0.5, 0.5), true, 0, 0, false, FRandom(-0.5, 0.5))
+			PSTL H 1 A_SpawnItemEx("smallbrass", 20, 3, 20, 0, FRandom(2.0, 5.0), FRandom(1.0, 2.0), 0)
+			Goto Recoil.Silenced
+		
+		// After-Fire Effects
+		Recoil.Unsilenced:
+			PSTL C 1 Offset(0,35) A_SpawnItemEx("gunsmoke", 20, 0, 15, 1, 0, 0.5, 0)
+			PSTL C 1 Offset(0,38)
+			PSTL C 1 A_SetPitch(pitch-1)
+			PSTL DD 1 A_SetPitch(pitch+0.25)
+			PSTL AA 1 A_SetPitch(pitch+0.25)
+			Goto Ready
+		Recoil.Silenced:
+			PSTL H 1 Offset(0,35) A_SpawnItemEx("gunsmoke", 20, 0, 15, 1, 0, 0.5, 0)
+			PSTL H 1 Offset(0,38)
+			PSTL H 1 A_SetPitch(pitch-1)
+			PSTL II 1 A_SetPitch(pitch+0.25)
+			PSTL FF 1 A_SetPitch(pitch+0.25)
+			Goto Ready
+		DryFire.Unsilenced:
+			TNT1 A 0 A_PlaySound("weapons/sshotl")
+			PSTL C 1 
+			PSTL C 1
+			Goto Ready
+		DryFire.Silenced:
+			TNT1 A 0 A_PlaySound("weapons/sshotl")
+			PSTL H 1
+			PSTL H 1
+			Goto Ready
+			
+		// Weapon Reload
+		Reload:
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 15, "Ready") // Minimum to not need reload.
+			TNT1 A 0 A_JumpIfInventory("Current_Reserve", 1, "StartReload")
+			Goto Ready
+		StartReload:
+			TNT1 A 0 A_JumpIfInventory("ccPistol_Unsilenced", 1, "StartReload.Unsilenced")
+			TNT1 A 0 A_JumpIfInventory("ccPistol_Silenced", 1, "StartReload.Silenced")
+			Stop
+		StartReload.Unsilenced:
+			PSTL E 0
+			Goto Reload.WeaponDown
+		StartReload.Silenced:
+			PSTL J 0 
+			Goto Reload.WeaponDown		
+		LoopReload.CheckCap:
+			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 15, "FinishReload") // Minimum to finish reload.
+			Goto LoopReload.Resume
+		FinishReload:
+			TNT1 A 11
+			PSTL A 0 A_JumpIfInventory("ccPistol_Unsilenced", 1, "FinishReload.Unsilenced")
+			PSTL F 0 A_JumpIfInventory("ccPistol_Silenced", 1, "FinishReload.Silenced")
+			Stop
+		FinishReload.Unsilenced:
+			PSTL A 0
+			Goto Reload.WeaponUp
+		FinishReload.Silenced:
+			PSTL F 0
+			Goto Reload.WeaponUp
+	}
+}
+
+
+
+// Weapon Modes
+/*
+These are abstract actors native to the weapon, to allow multiple
+firing modes.
+*/
+actor ccPistol_Unsilenced : Inventory {
+	Tag "$WMT_PISTOL_UNSILENCED"
+	Inventory.MaxAmount 1
+	+INVENTORY.INVBAR
+}
+actor ccPistol_Silenced : Inventory {
+	Tag "$WMT_PISTOL_SILENCED"
+	Inventory.MaxAmount 1
+	+INVENTORY.INVBAR
+}
+
+
+
+// Weapon Modes - Memory
+/*
+These are here so the system "remembers" what setting the gun had,
+without writing the Tag on the HUD.
+*/
+actor ccPistol_Unsilenced_m : Inventory {
+	Inventory.MaxAmount 1
+	+INVENTORY.PERSISTENTPOWER
+}
+actor ccPistol_Silenced_m : Inventory {
+	Inventory.MaxAmount 1
+	+INVENTORY.PERSISTENTPOWER
+}
+
+
+
+// Weapon Chamber
+/*
+This is the ammunition inside the gun, so the game remembers how
+much was in it when pulling it out again.
+*/
+actor ccPistol_Chamber : Ammo {
+	Inventory.MaxAmount 15
+}
+
+
+
+
+
+// Weapon-Swap Spawn
+/*
+This is the spawn object of the weapon.
+*/
+actor ccPistolPickup : ccWeaponPickup 11300 {
+	/*
+	This is the amount of ammo the pickup provides when picked up.
+	*/
+	Accuracy 8
+	
+	/*
+	Identifies this actor class and derived classes as the named pickup.
+	This property needs to match the actor class's name.
+	*/
+	Species "ccPistolPickup"
+
+	/*
+	This is the name printed on the HUD when using pickup.
+	It also displays in the pickup message.
+	*/
+	Tag "$WT_PISTOL"
+
+	States {
+		Spawn:
+			PSTL Z 0
+			Goto Init
+	}
+}

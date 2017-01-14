@@ -1,0 +1,49 @@
+/*
+
+Underwater Sway
+
+When the player is underwater, it rocks the camera from side to side
+to mimic being underwater.
+
+*/
+
+// Initials
+#library "underwatersway"
+
+#include "zcommon.acs"
+
+#define ROLLSPEED 0.0075 // Camera roll speed. Smaller numbers reduce speed.
+#define MAXROLLANGLE 0.025 // Maximum angle to allow roll. Smaller numbers reduce roll amount.
+
+
+
+// Scripts
+script "underwatersway" ENTER {
+	int angle;
+	int roll;
+	while (True) {		
+		if (GetActorProperty(0, APROP_Waterlevel) == 3) {
+			
+			// Increment the angle.
+			angle += ROLLSPEED;
+
+			// Clamp angle amount.
+			if (angle >= 1.0 || angle < 0.0) {
+				angle = 0.0;
+			}
+
+			// Calculate the roll.
+			roll = sin(angle);
+			roll = FixedMul(roll, MAXROLLANGLE);
+
+			// Apply the roll.
+			ChangeActorRoll(0, roll, True);
+		}
+		else {
+			angle = 0.0;
+			roll = 0.0;
+			ChangeActorRoll(0, angle, True);
+		}
+		Delay(1);
+	}
+}

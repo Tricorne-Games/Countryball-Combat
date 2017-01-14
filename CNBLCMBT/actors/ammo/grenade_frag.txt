@@ -1,0 +1,72 @@
+/*
+
+Ammo - Frag Grenade
+
+The "ammo" for frag grenades.
+
+*/
+
+// 
+
+// Ammo Class
+/*
+Base class for pickups of this ammo type.
+This is also used to store the amount of the ammo overall.
+*/
+actor grenade_frag : Ammo {
+	Tag "Frag Grenades"
+	
+	//Inventory.Icon "ROCKA0"
+	
+	Inventory.MaxAmount 5
+}
+
+// Ammo Pickups
+actor grenade_frag_some: grenade_frag {
+	Inventory.PickupMessage "Some frag grenades."
+	
+	Inventory.Amount 4
+	
+	States {
+		Spawn:
+			BON2 A -1
+			Stop
+		Use:
+			TNT1 A 0
+	}
+}
+
+// Projectile
+actor grenade_frag_p : HEGrenade { // Sets BounceType to be "Doom" by default.
+	Tag "grenade_frag_p"
+	Damage 0 // Set to 0 because Strife's HE Grenade does 1 damage.
+	Health 1
+	Height 4
+	Radius 2
+	Speed 35
+	Mass 5 
+	BounceFactor 0.3
+	WallBounceFactor 0.25
+	BounceCount 3
+	ReactionTime 140 // Use this to have the countdown timer, instead of setting the frame duration.
+	+SHOOTABLE
+	+NOBLOOD
+	+DONTGIB
+	+NOICEDEATH
+	+FORCEXYBILLBOARD
+	+VULNERABLE
+	-NOGRAVITY
+	-NOBLOCKMAP
+	-STRIFEDAMAGE // Remove Strife's lower RNG damage.
+
+	States {
+		Spawn:
+			BON2 A 1 A_CountDown // Decreases ReactionTime by 1 each time its called.
+			Loop
+		Death:
+			TNT1 A 0 A_Quake(5, 25, 0, 400)
+			TNT1 A 1 Bright A_SpawnItemEx("GrenadeExplosion")
+			TNT1 A 1 Bright A_Explode
+			Stop
+	}
+}

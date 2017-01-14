@@ -1,0 +1,354 @@
+/*
+
+MENUDEF
+
+*/
+
+DEFAULTLISTMENU {
+	Font "BigFont", "Tan"
+	Selector "M_KNIFE0", 0, 0
+	Linespacing 16
+}
+
+
+
+// Main Menu
+ListMenu "MainMenu" {		
+	StaticPatch 94, 2, "M_TITLE"
+	Position 97, 72
+	IfOption(ReadThis) {
+			Position 97, 64
+	}
+	
+	Selector "M_KNIFE0", -43, -13
+	
+	TextItem "$MM_NEWGAME", "n", "PlayerclassMenu"
+	ifOption(SwapMenu) {
+		TextItem "$MM_LOADGAME", "l", "LoadGameMenu"
+		TextItem "$MM_SAVEGAME", "s", "SaveGameMenu"
+		TextItem "$MM_OPTIONS","o", "OptionsMenu"
+	}
+	else {
+		TextItem "$MM_OPTIONS","o", "OptionsMenu"
+		TextItem "$MM_LOADGAME", "l", "LoadGameMenu"
+		TextItem "$MM_SAVEGAME", "s", "SaveGameMenu"
+	}
+	TextItem "$MM_ABOUT","a", "AboutPage1"
+	TextItem "$MM_CREDITS", "c", "CreditsPage1"
+	TextItem "$MM_QUITGAME", "q", "QuitMenu"
+}
+
+
+
+// Player Class Menu
+ListMenu "PlayerclassMenu" {
+	NetgameMessage "$NEWGAME" // $ located in engine.pk3 LANGUAGE lump.
+
+	Font "BigFont", "Tan"
+	StaticTextCentered 160, 15, "$MNU_CHOOSECLASS" // $ located in engine.pk3 LANGUAGE lump.
+	
+	Font "BigFont", "Untranslated"
+	Position 48, 63
+	PlayerDisplay 220, 63, "20 00 00", "80 00 40"
+	MouseWindow 0, 220
+	
+	// The rest of this menu will be set up based on the actual player class definitions.
+}
+
+
+
+// Episode Menu
+ListMenu "EpisodeMenu" {
+	NetgameMessage "$NEWGAME" // $ located in engine.pk3 LANGUAGE lump.
+	
+	Font "BigFont", "Tan"
+	Position 48, 63
+	StaticText 54, 38, "$EM_TITLE"
+	
+	Font "BigFont", "Untranslated"
+	// Items will be filled in by MAPINFO.
+}
+
+
+
+// Skill Menu
+ListMenu "SkillMenu" {
+	Font "BigFont", "Tan"
+	StaticText 54, 38, "$SM_TITLE"
+	
+	Selector "M_KNIFE0", -43, -17
+	
+	Font "ConsoleFont", "Untranslated"
+	Position 48, 63
+}
+
+
+
+// Load Game Menu
+ListMenu "LoadGameMenu" {
+	NetgameMessage "$LOADNET" // $ located in engine.pk3 LANGUAGE lump.
+	
+	Font "BigFont", "Tan"
+	StaticTextCentered 160, -20, "$LGM_TITLE"
+	
+	Position 80, 54
+	Class "LoadMenu" // Uses its own implementation.
+}
+
+
+
+// Save Game Menu
+ListMenu "SaveGameMenu" {
+	Font "BigFont", "Tan"
+	StaticTextCentered 160, -20, "$SGM_TITLE"
+	
+	Position 80, 54
+	Class "SaveMenu" // Uses its own implementation.
+}
+
+
+
+// About Page 1
+ListMenu "AboutPage1" {	
+	Font "BigFont", "Untranslated"
+	StaticText 0, 0, "$ABOUT_H0"
+	
+	Font "SmallFont", "Red"
+	StaticText 0, 20, "$ABOUT_H1"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 30, "$ABOUT_S1"
+	
+	// Turn Pages
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 190
+	Selector "-", -10, 0
+	TextItem "Next", "n", "AboutPage2"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 200
+	Selector "-", -10, 0
+	TextItem "Back", "b", "MainMenu"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 210
+	Selector "-", -10, 0
+	TextItem "Main Menu", "m", "MainMenu"
+}
+
+// About Page 2
+ListMenu "AboutPage2" {	
+	Font "SmallFont", "Red"
+	StaticText 0, 00, "$ABOUT_H2"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 10, "$ABOUT_S2"
+	
+	// Turn Pages
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 190
+	Selector "-", -10, 0
+	TextItem "Next", "n", "AboutPage3"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 200
+	Selector "-", -10, 0
+	TextItem "Back", "b", "AboutPage1"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 210
+	Selector "-", -10, 0
+	TextItem "Main Menu", "m", "MainMenu"
+}
+
+// About Page 3
+ListMenu "AboutPage3" {	
+	Font "SmallFont", "Red"
+	StaticText 0, 00, "$ABOUT_H3"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 10, "$ABOUT_S3"
+	
+	// Turn Pages
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 190
+	Selector "-", -10, 0
+	TextItem "Next", "n", "MainMenu"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 200
+	Selector "-", -10, 0
+	TextItem "Back", "b", "AboutPage2"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 210
+	Selector "-", -10, 0
+	TextItem "Main Menu", "m", "MainMenu"
+}
+
+
+
+// Credits Page 1
+ListMenu "CreditsPage1" {	
+	Font "BigFont", "Untranslated"
+	StaticText 0, 0, "$CREDITS_H0"
+	
+	Font "SmallFont", "Red"
+	StaticText 0, 20, "$CREDITS_H10"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 30, "$CREDITS_S10"
+	
+	// Turn Pages
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 190
+	Selector "-", -10, 0
+	TextItem "Next", "n", "CreditsPage2"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 200
+	Selector "-", -10, 0
+	TextItem "Back", "b", "MainMenu"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 210
+	Selector "-", -10, 0
+	TextItem "Main Menu", "m", "MainMenu"
+}
+
+// Credits Page 2
+ListMenu "CreditsPage2" {	
+
+	// Game Design
+	Font "SmallFont", "Red"
+	StaticText 0, 0, "$CREDITS_H20"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 10, "$CREDITS_SANTO"
+	
+	// Level Design
+	Font "SmallFont", "Red"
+	StaticText 0, 20, "$CREDITS_H21"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 30, "NONE YET!"
+	
+	// Graphics
+	Font "SmallFont", "Red"
+	StaticText 0, 40, "$CREDITS_H22"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 50, "$CREDITS_SANTO"
+	
+	// Sounds
+	Font "SmallFont", "Red"
+	StaticText 0, 70, "$CREDITS_H23"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 80, "$CREDITS_WELBY"
+	
+	// Programming
+	Font "SmallFont", "Red"
+	StaticText 0, 90, "$CREDITS_H24"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 100, "$CREDITS_SANTO"
+	
+	// Advisory/Assistance
+	Font "SmallFont", "Red"
+	StaticText 0, 110, "$CREDITS_H29"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 120, "$CREDITS_GLAICE"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 130, "$CREDITS_ZDCF"
+	
+	// Turn Pages
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 190
+	Selector "-", -10, 0
+	TextItem "Next", "n", "CreditsPage3"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 200
+	Selector "-", -10, 0
+	TextItem "Back", "b", "CreditsPage1"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 210
+	Selector "-", -10, 0
+	TextItem "Main Menu", "m", "MainMenu"
+}
+
+// Credits Page 3
+ListMenu "CreditsPage3" {		
+	Font "SmallFont", "Red"
+	StaticText 0, 0, "$CREDITS_H30"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 10, "$CREDITS_S30"
+	
+	Font "SmallFont", "Red"
+	StaticText 0, 70, "$CREDITS_H31"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 80, "$CREDITS_S31"
+	
+	// Turn Pages
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 190
+	Selector "-", -10, 0
+	TextItem "Next", "n", "CreditsPage4"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 200
+	Selector "-", -10, 0
+	TextItem "Back", "b", "CreditsPage2"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 210
+	Selector "-", -10, 0
+	TextItem "Main Menu", "m", "MainMenu"
+}
+
+// Credits Page 4
+ListMenu "CreditsPage4" {		
+	Font "SmallFont", "Red"
+	StaticText 0, 0, "$CREDITS_H40"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 10, "$CREDITS_S40"
+	
+	Font "SmallFont", "Red"
+	StaticText 0, 50, "$CREDITS_H41"
+	
+	Font "SmallFont", "White"
+	StaticText 0, 60, "$CREDITS_S41"
+	
+	Font "SmallFont", "LightBlue"
+	StaticText 90, 170, "$CREDITS_TY"
+	
+	// Turn Pages
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 190
+	Selector "-", -10, 0
+	TextItem "Next", "n", "MainMenu"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 200
+	Selector "-", -10, 0
+	TextItem "Back", "b", "CreditsPage3"
+	
+	Font "ConsoleFont", "Brick"
+	Position 20, 210
+	Selector "-", -10, 0
+	TextItem "Main Menu", "m", "MainMenu"
+}

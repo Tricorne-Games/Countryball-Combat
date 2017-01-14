@@ -1,0 +1,10 @@
+/*
+
+MAPINFO - Map Definitions
+
+*/
+
+gamedefaults {
+	FallingDamage
+	MonsterFallingDamage
+}

@@ -1,0 +1,54 @@
+Script "GrenadeFire" (void)
+{
+   int before = GetPlayerInput(-1, INPUT_OLDBUTTONS);
+   int after = GetPlayerInput(-1, INPUT_BUTTONS);
+
+   GiveInventory("ChargeTimer", 1);
+
+   if ((before & BT_ATTACK) && !(after & BT_ATTACK))  //press and release fire
+   {
+      GiveInventory("ThrowGrenade", 1);
+   }
+}
+
+
+
+
+
+Fire:
+    PISG A 0 A_JumpIfInventory("ThrowGrenade", 1, "ChargeLevel")
+    PISG A 1  ACS_NamedExecute("GrenadeFire", 0)
+   Loop
+
+ ChargeLevel:
+    PISG B 0 A_TakeInventory("ThrowGrenade", 1)
+    PISG A 0 A_JumpIfInventory("ChargeTimer", 4, "BlowUpinHand") 
+    PISG A 0 A_JumpIfInventory("ChargeTimer", 3, "Level3")  //add as many timer states here as you want
+    PISG A 0 A_JumpIfInventory("ChargeTimer", 2, "Level2")
+    PISG A 0 A_JumpIfInventory("ChargeTimer", 1, "Level1")
+    PISG A 2 A_ReFire
+    Goto Ready
+
+//Timer states
+Level3:
+PISG B 2 A_FireCustomMissile ("GrenadeLevel3",0,1,0,8,0)  //you will have to make multiple grenade actors each with a different life time for each level.
+Goto Ready
+
+BlowUpinHand:
+TNT1 A 0 A_Explode (50)
+Goto Ready
+
+
+
+
+
+
+Hold:
+    // Holding animation goes there
+    TNT1 A 0 A_GiveInventory("ChargeTimer",1)
+    TNT1 A 0 A_JumpIfInventory("ChargeTimer",10,"ExplodeInHand")
+    TNT1 A 0 A_ReFire
+    // Throwing animation goes there
+    TNT1 A 0 A_SpawnItemEx("Grenade",0,0,0,CountInv("ChargeTimer")*3,0,5)
+    TNT1 A 0 A_TakeInventory("ChargeTimer",10)
+    Goto Ready

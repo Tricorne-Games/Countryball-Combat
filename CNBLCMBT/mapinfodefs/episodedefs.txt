@@ -1,0 +1,12 @@
+/*
+
+MAPINFO - Episode Definitions
+
+*/
+
+clearepisodes
+
+// New Episode
+Episode "MAP01" {
+	Name = "New Episode"
+}
