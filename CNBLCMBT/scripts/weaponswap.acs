@@ -207,9 +207,6 @@ script "WeaponPickup" (int tid) {
 		Print(s:"\c[White]", s:GetWeaponName(tid, group));
 
 		// Give the player ammunition.
-		/*
-		TO DO: If the weapon uses a different type of ammo, discharge all of the previous ammo.
-		*/
 		if (group != WS_GRP_Melee) {
 			GiveInventory(weapons[group][index][WS_WeaponAmmoClass], GetActorProperty(tid, APROP_Accuracy));
 		}
@@ -221,6 +218,10 @@ script "WeaponPickup" (int tid) {
 		if (StrIcmp(foundWeapon[WS_WeaponClass], "None") && compare) {
 			// If the found weapon is currently being held by the player, switch to the one that was just picked up.
 			if (CheckWeapon(foundWeapon[WS_WeaponClass])) {
+				GiveInventory("WeaponSwapWait", 1);
+				while (CheckInventory("WeaponSwapWait") >= 1) {
+					Delay(1);
+				}
 				SetWeapon(weapons[group][index][WS_WeaponClass]);
 			}
 

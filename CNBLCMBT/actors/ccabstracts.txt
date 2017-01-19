@@ -62,3 +62,17 @@ they start taking damage from ice water.
 actor IceWaterProtect : Inventory {
 	inventory.MaxAmount 1
 }
+
+
+
+/*
+Weapon Swap Wait
+
+When the Ready: state reads that this inventory is present,
+it will force the weapon to go to the Deselect: state, so
+taking up the new weapon will first fully flush the previous
+weapon's content.
+*/
+actor WeaponSwapWait : Inventory {
+	inventory.MaxAmount 1
+}
