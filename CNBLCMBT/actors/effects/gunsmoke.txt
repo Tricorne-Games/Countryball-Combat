@@ -5,12 +5,15 @@ Effect - Gun Smoke
 */
 
 actor GunSmoke {
+	PROJECTILE
+	+FORCEXYBILLBOARD
 	+NOBLOCKMAP
 	+NOGRAVITY
 	+ALLOWPARTICLES
 	+RANDOMIZE
 	RenderStyle Translucent
 	Alpha 0.5
+	Speed 2
 	VSpeed 1
 	Mass 5
 

@@ -125,13 +125,13 @@ actor ccAssaultRifle : ccBallistic {
 		and the reserve ammo back to its storage.
 		*/
 		UnloadChamber:
-			TNT1 A 0 A_TakeInventory("Current_Chamber", 1)
-			TNT1 A 0 A_GiveInventory("ccAssaultRifle_Chamber", 1)
-			TNT1 A 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber")
+			ASRF A 0 A_TakeInventory("Current_Chamber", 1)
+			ASRF A 0 A_GiveInventory("ccAssaultRifle_Chamber", 1)
+			ASRF A 0 A_JumpIfInventory("Current_Chamber", 1, "UnloadChamber")
 			Goto CheckCurrentChamber
 		UnloadReserve:
-			TNT1 A 0 A_TakeInventory("Current_Reserve", 1)
-			TNT1 A 0 A_GiveInventory("bullet_large", 1)
+			ASRF A 0 A_TakeInventory("Current_Reserve", 1)
+			ASRF A 0 A_GiveInventory("bullet_large", 1)
 			ASRF A 0 A_JumpIfInventory("Current_Reserve", 1, "UnloadReserve")
 			Goto PostDeselect
 			
@@ -168,7 +168,7 @@ actor ccAssaultRifle : ccBallistic {
 		Fire.Automatic.Recoil:
 			ASRF A 0 A_PlaySound("weapons/pistol")
 			ASRF A 0 A_FireCustomMissile("bullet_large_p", FRandom(-0.5, 0.5), true, 0, 0, false, FRandom(-0.5, 0.5))
-			ASRF A 0 A_SpawnItemEx("gunsmoke", 20, 0, 15, 1, 0, 0.5, 0)
+			ASRF A 0 A_FireCustomMissile("gunsmoke", 0, false, 2, 0, false, 0)
 			ASRF A 1 Offset(0,38) A_SetPitch(pitch-1)
 			ASRF A 1 Offset(0,35) A_SetPitch(pitch+1)
 			ASRF A 1
@@ -180,7 +180,7 @@ actor ccAssaultRifle : ccBallistic {
 		Fire.Semiauto.Recoil:
 			ASRF A 0 A_PlaySound("weapons/pistol")
 			ASRF A 0 A_FireCustomMissile("bullet_large_p", FRandom(-0.1, 0.1), true, 0, 0, false, FRandom(-0.1, 0.1))
-			ASRF A 0 A_SpawnItemEx("gunsmoke", 20, 0, 15, 1, 0, 0.5, 0)
+			ASRF A 0 A_FireCustomMissile("gunsmoke", 0, false, 2, 0, false, 0)
 			ASRF A 1 Offset(0,38) A_SetPitch(pitch-1)
 			ASRF A 1 Offset(0,35) A_SetPitch(pitch+1)
 			ASRF A 1

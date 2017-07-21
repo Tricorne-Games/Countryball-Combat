@@ -208,14 +208,14 @@ actor ccPistol : ccBallistic replaces Pistol {
 		
 		// After-Fire Effects
 		Recoil.Unsilenced:
-			PSTL C 1 Offset(0,35) A_SpawnItemEx("gunsmoke", 20, 0, 15, 1, 0, 0.5, 0)
+			PSTL C 1 A_FireCustomMissile("gunsmoke", 0, false, 2, 0, false, 0)
 			PSTL C 1 Offset(0,38)
 			PSTL C 1 A_SetPitch(pitch-1)
 			PSTL DD 1 A_SetPitch(pitch+0.25)
 			PSTL AA 1 A_SetPitch(pitch+0.25)
 			Goto Ready
 		Recoil.Silenced:
-			PSTL H 1 Offset(0,35) A_SpawnItemEx("gunsmoke", 20, 0, 15, 1, 0, 0.5, 0)
+			PSTL H 1 A_FireCustomMissile("gunsmoke", 0, false, 2, 0, false, 0)
 			PSTL H 1 Offset(0,38)
 			PSTL H 1 A_SetPitch(pitch-1)
 			PSTL II 1 A_SetPitch(pitch+0.25)

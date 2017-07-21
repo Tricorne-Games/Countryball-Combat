@@ -218,10 +218,15 @@ script "WeaponPickup" (int tid) {
 		if (StrIcmp(foundWeapon[WS_WeaponClass], "None") && compare) {
 			// If the found weapon is currently being held by the player, switch to the one that was just picked up.
 			if (CheckWeapon(foundWeapon[WS_WeaponClass])) {
+				// Purge all ammo for the current weapon.
+				TakeInventory("Current_Chamber", 999);
+				TakeInventory("Current_Reserve", 999);
+				// Use a WSW item to help clear out the remaining weapon data on the HUD.
 				GiveInventory("WeaponSwapWait", 1);
 				while (CheckInventory("WeaponSwapWait") >= 1) {
 					Delay(1);
 				}
+				// Set up the new weapon.
 				SetWeapon(weapons[group][index][WS_WeaponClass]);
 			}
 

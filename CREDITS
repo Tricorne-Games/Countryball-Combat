@@ -60,11 +60,6 @@ S: tony
 E: awalker@air-internet.com
 D: textures
 
-F: beefstupid
-S: Dr. Beefstupid
-E: shurkama@farts.com
-D: sounds
-
 F: spaceforce
 S: spaceforce
 E: spaceforce@snohost.com
@@ -197,10 +192,10 @@ E: Enjay001@hotmail.com
 D: Sounds
 
 F: jond
-N: Jon Dowland
-E: spambox@alcopop.org
-W: http://alcopop.org/
-D: Admin, textures, web scripts, levels, hires zealotism, sounds
+N: Jonathan Dowland
+E: jon+Chiew6ye@alcopop.org
+W: http://jmtd.net/
+D: Former admin, website, FTP host and nightlies; textures; scripts; levels; hires zealotism; sounds
 
 F: rancor
 S: Malice Rancor
@@ -317,7 +312,7 @@ D: A chunk of perl code
 N: Patrick "Amarande" Kalinauskas
 F: amarande
 S: Amarande
-E: amarande@lunasanguine.com
+E: amarande@gmail.com
 D: Levels
 
 F: cacodemon_leader
@@ -479,7 +474,7 @@ D: project admin, scripting and build system, textures, sprites
 
 F: joed
 N: Joe Dowland
-E: spambox@alcopop.org
+E: jon+joefreedoom@alcopop.org
 D: sounds
 
 F: rellik
@@ -619,9 +614,10 @@ F: archfile
 S: Archfile
 D: levels
 
-F: sodaholic
-S: Sodaholic
-D: sprites, sounds
+F: Sodaholic
+S: sodaholic
+E: soliver486@gmail.com
+D: graphics, sprites, sounds
 
 F: mechadon
 N: Brett Harrell
@@ -718,3 +714,104 @@ N: Cray Elliott
 S: mp2e
 E: MP2E@archlinux.us
 D: lumps (demos, playtesting)
+
+F: Voltcom9
+S: voltcom9
+E: Earthbound.Glenn@gmail.com
+D: level/chapter names
+
+F: jmickle
+N: Jerry Mickle
+S: jmickle
+E: jaymickle@gmail.com
+D: music
+
+F: Doomkid
+S: doomkid
+E: thedevilzworker@hotmail.com
+D: freedm playtesting and demo participation
+
+F: Mogul
+S: mogul
+N: Jeremy Emerson
+D: music
+
+F: Sergeant_Mark_IV
+S: sergeant_mark_iv
+N: Marcos Abenante
+E: marcos.mk3@outlook.com
+D: sprites
+
+F: bloax
+S: bloax
+D: sprites
+
+F: undead003
+S: undead003
+N: Simon Kostoski
+E: undead0003@gmail.com
+D: sounds
+
+F: Angry Saint
+S: angry_saint
+E: mechanicalambassador@gmail.com
+D: levels
+
+F: Nooze
+S: noose
+E: noozearts@gmail.com
+D: sprites
+
+F: mazmon7734
+S: mazmon
+N: Maz Hades
+E: mazhades@yahoo.com
+W: http://mazmon7734.deviantart.com/
+D: sprites
+
+F: Jaws In Space
+S: jaws_in_space
+N: Micah Petersen
+E: jawsinspace@gmail.com
+D: levels
+
+F: Eriance
+S: eriance
+N: Eric Ou
+E: eriance@gmail.com
+W: http://amuscaria.deviantart.com/
+D: sprites
+
+F: Horror Movie Guy
+S: horrormovieguy
+N: Reinaldo
+E: crumbscrunchydelights@gmail.com
+D: sprites
+
+F: Zrrion
+S: zrrion
+N: Roth Smith
+E: zrrion@gmail.com
+W: http://zrrion.deviantart.com/
+D: sprites
+
+F: Kracov
+S: kracov
+N: Kracov Bolkonski
+E: kracov.wolf@gmail.com
+W: http://kracov.org/
+D: graphics
+
+F: robotdog1
+S: robotdog1
+D: sprites, patches
+
+F: CWolfRu
+S: cwolfru
+D: levels
+
+F: jimmy
+S: Jimmy
+N: James Paddock
+E: jamespaddock@hotmail.com
+D: levels

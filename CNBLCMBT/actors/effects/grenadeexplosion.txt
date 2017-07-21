@@ -19,7 +19,10 @@ actor GrenadeExplosion {
 	
 	States {
 		Spawn:
-			BEXP A 2 Bright
+		Death:
+			BEXP A 3 Bright nodelay A_Quake(5, 3, 100, 175)
+			BON2 A 0 Bright nodelay A_PlaySound("weapons/rocklx")
+			BEXP A 1 Bright 
 			BEXP B 2 Bright A_SetScale(1.2, 1.2)
 			BEXP C 4 Bright 
 			BEXP D 1 Bright A_SetScale(1.2, 1.2)
